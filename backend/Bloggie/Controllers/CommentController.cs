@@ -8,24 +8,24 @@ namespace Bloggie.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TagController : ControllerBase
-    {
 
-        private readonly ITagRepo repo;
+    public class CommentController : ControllerBase
+    {
+        private readonly ICommentRepo repo;
         private readonly ILogger logger;
 
-        public TagController(ITagRepo repo, ILogger<TagController> logger)
+        public CommentController(ICommentRepo repo, ILogger logger)
         {
             this.repo = repo;
             this.logger = logger;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add(TagRequest tagRequest)
+        public async Task<ActionResult> Add(CommentRequest commentRequest)
         {
             try
             {
-                var response = await repo.AddAsync(tagRequest);
+                var response = await repo.AddAsync(commentRequest);
                 return Ok(response);
             }
             catch (CustomException ex)
@@ -41,7 +41,7 @@ namespace Bloggie.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult> GetAllTag()
+        public async Task<ActionResult> GetAllComment()
         {
             try
             {
@@ -60,8 +60,7 @@ namespace Bloggie.Controllers
             }
         }
 
-
-        [HttpDelete("id/{id}")]
+         [HttpDelete("id/{id}")]
         public async Task<ActionResult> DeleteById([FromRoute] int id)
         {
             try
@@ -82,11 +81,11 @@ namespace Bloggie.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> Update([FromBody] TagRequest tagRequest, int id)
+        public async Task<ActionResult> Update([FromBody] CommentRequest commentRequest, int id)
         {
             try
             {
-                var response = await repo.UpdateAsync(tagRequest, id);
+                var response = await repo.UpdateAsync(commentRequest, id);
                 return Ok(response); 
             }
             catch (CustomException ex)
@@ -101,7 +100,7 @@ namespace Bloggie.Controllers
             }
         }
 
-        [HttpGet("tagId/{id}")]
+        [HttpGet("commentId/{id}")]
         public async Task<ActionResult> GetByIdAsync(int id) {
             try
             {

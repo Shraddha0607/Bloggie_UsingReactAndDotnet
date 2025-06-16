@@ -1,6 +1,8 @@
+using Bloggie.Models.DomainModel;
+
 namespace Bloggie.Models.Dtos.ResponseModels;
 
-public class Comment
+public class CommentResponse
 {
     public int Id { get; set; }
     public string CommentDesc { get; set; }

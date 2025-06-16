@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Bloggie.Models.DomainModel;
 
@@ -35,9 +34,5 @@ public class BlogPostRequest
 
     [Required]
     public Boolean IsVisible { get; set; }
-    [DefaultValue(0)]
-    public int LikeCount { get; set; }
-    [DefaultValue(0)]
-    public int DislikeCount { get; set; }
     public List<Tag> Tags { get; set; } 
 }

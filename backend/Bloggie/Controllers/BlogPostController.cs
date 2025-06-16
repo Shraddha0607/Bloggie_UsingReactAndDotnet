@@ -8,24 +8,24 @@ namespace Bloggie.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TagController : ControllerBase
-    {
 
-        private readonly ITagRepo repo;
+    public class BlogPostController : ControllerBase
+    {
+        private readonly IBlogPostRepo repo;
         private readonly ILogger logger;
 
-        public TagController(ITagRepo repo, ILogger<TagController> logger)
+        public BlogPostController(IBlogPostRepo repo, ILogger<BlogPostController> logger)
         {
             this.repo = repo;
             this.logger = logger;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add(TagRequest tagRequest)
+        public async Task<ActionResult> Add(BlogPostRequest blogPostRequest)
         {
             try
             {
-                var response = await repo.AddAsync(tagRequest);
+                var response = await repo.AddAsync(blogPostRequest);
                 return Ok(response);
             }
             catch (CustomException ex)
@@ -82,11 +82,11 @@ namespace Bloggie.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<ActionResult> Update([FromBody] TagRequest tagRequest, int id)
+        public async Task<ActionResult> Update([FromBody] BlogPostRequest blogPostRequest, int id)
         {
             try
             {
-                var response = await repo.UpdateAsync(tagRequest, id);
+                var response = await repo.UpdateAsync(blogPostRequest, id);
                 return Ok(response); 
             }
             catch (CustomException ex)
@@ -101,7 +101,7 @@ namespace Bloggie.Controllers
             }
         }
 
-        [HttpGet("tagId/{id}")]
+        [HttpGet("blogPostId/{id}")]
         public async Task<ActionResult> GetByIdAsync(int id) {
             try
             {

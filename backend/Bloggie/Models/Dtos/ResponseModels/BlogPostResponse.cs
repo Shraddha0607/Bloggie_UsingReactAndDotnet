@@ -2,7 +2,7 @@ using Bloggie.Models.DomainModel;
 
 namespace Bloggie.Models.Dtos.ResponseModels;
 
-public class BlogPost
+public class BlogPostResponse
 {
     public int Id { get; set; }
 
