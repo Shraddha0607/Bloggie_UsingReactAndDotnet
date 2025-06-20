@@ -4,6 +4,7 @@ using Bloggie.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -21,6 +22,7 @@ builder.Services.AddScoped<ITagRepo, TagRepo>();
 // builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<ITokenRepo, TokenRepo>();
+builder.Services.AddScoped<ICdnRepo, CdnRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -99,6 +101,20 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.UseHttpsRedirection();
+
+// so that folder is serve via Http server also
+var cdnDir = Path.Combine(builder.Environment.ContentRootPath, "cdn-images");
+if (!Directory.Exists(cdnDir))
+{
+    Directory.CreateDirectory(cdnDir);  // Ensure it exists
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "cdn-images")),
+    RequestPath = ""
+});
+
 
 app.Run();
 
