@@ -7,8 +7,13 @@ public class Comment
     public int Id { get; set; }
     [Required]
     [StringLength(50, ErrorMessage = "You are allowed to add only 50 characters.")]
-    public string CommentDesc { get; set; }
+    public string Content { get; set; }
+    public DateTime CreatedAt { get; set; }
     [Required]
     public int PostId { get; set; }
+    [Required]
+
+    public int UserId { get; set; }
+    
     public BlogPost Post { get; set; }
 }

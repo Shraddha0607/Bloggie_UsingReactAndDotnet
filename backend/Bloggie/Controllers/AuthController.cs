@@ -67,6 +67,7 @@ namespace Bloggie.Controllers
 
                         var response = new LoginResponseDto
                         {
+                            Id = user.Id,
                             JwtToken = jwtToken,
                         };
 
