@@ -28,7 +28,7 @@ public class CdnRepo : ICdnRepo
             Directory.CreateDirectory(cdnDirPath);
         }
 
-        var filePath = Path.Combine(cdnDirPath, fileName);  // await
+        var filePath = Path.Combine(cdnDirPath, fileName);  
 
          var bytes = Convert.FromBase64String(imageUploadRequest.ImageContent);
             await File.WriteAllBytesAsync(filePath, bytes);

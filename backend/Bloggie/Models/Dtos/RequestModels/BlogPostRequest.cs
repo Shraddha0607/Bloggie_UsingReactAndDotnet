@@ -34,5 +34,5 @@ public class BlogPostRequest
 
     [Required]
     public Boolean IsVisible { get; set; }
-    public List<Tag> Tags { get; set; } 
+    public List<int> TagIds { get; set; } 
 }

@@ -19,7 +19,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("AuthBloggieConne
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ITagRepo, TagRepo>();
-// builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();
+builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<ITokenRepo, TokenRepo>();
 builder.Services.AddScoped<ICdnRepo, CdnRepo>();

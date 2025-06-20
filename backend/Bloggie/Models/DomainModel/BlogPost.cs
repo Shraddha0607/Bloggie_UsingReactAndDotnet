@@ -19,7 +19,7 @@ public class BlogPost
 
     [Required]
     [Url]
-    [StringLength(64, ErrorMessage = "You are allowed to add only 64 characters.")]
+    [StringLength(128, ErrorMessage = "You are allowed to add only 128 characters.")]
     public string ImageUrl { get; set; }
 
     [Required]
