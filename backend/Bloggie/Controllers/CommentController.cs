@@ -40,12 +40,12 @@ namespace Bloggie.Controllers
             }
         }
 
-        [HttpGet("all")]
-        public async Task<ActionResult> GetAllComment()
+        [HttpGet]
+        public async Task<ActionResult> GetAllComments(int PostId)
         {
             try
             {
-                var response = await repo.GetAllAsync();
+                var response = await repo.GetAllAsync(PostId);
                 return Ok(response);
             }
             catch (CustomException ex)
@@ -60,63 +60,5 @@ namespace Bloggie.Controllers
             }
         }
 
-         [HttpDelete("id/{id}")]
-        public async Task<ActionResult> DeleteById([FromRoute] int id)
-        {
-            try
-            {
-                var response = await repo.DeleteByIdAsync(id);
-                return Ok(response);
-            }
-            catch (CustomException ex)
-            {
-                logger.LogError(ex.Message);
-                return BadRequest(new MessageResponse { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("update")]
-        public async Task<ActionResult> Update([FromBody] CommentRequest commentRequest, int id)
-        {
-            try
-            {
-                var response = await repo.UpdateAsync(commentRequest, id);
-                return Ok(response); 
-            }
-            catch (CustomException ex)
-            {
-                logger.LogError(ex.Message);
-                return BadRequest(new MessageResponse { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("commentId/{id}")]
-        public async Task<ActionResult> GetByIdAsync(int id) {
-            try
-            {
-                var response = await repo.GetByIdAsync(id);
-                return Ok(response);
-            }
-            catch (CustomException ex)
-            {
-                logger.LogError(ex.Message);
-                return BadRequest(new MessageResponse { Message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }

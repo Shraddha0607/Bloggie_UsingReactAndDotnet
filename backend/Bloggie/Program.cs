@@ -13,8 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BloggieDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieConnectionString")));
 
-builder.Services.AddDbContext<AuthBloggieDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("AuthBloggieConnectionString")));
 
 builder.Services.AddControllers();
 
@@ -23,6 +21,7 @@ builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();
 builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<ITokenRepo, TokenRepo>();
 builder.Services.AddScoped<ICdnRepo, CdnRepo>();
+builder.Services.AddScoped<IBlogPostReactionRepo, BlogPostReactionRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -58,7 +57,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("CollegeApp")
-    .AddEntityFrameworkStores<AuthBloggieDbContext>()
+    .AddEntityFrameworkStores<BloggieDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>

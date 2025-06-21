@@ -1,7 +1,9 @@
 
 using Bloggie.Data;
+using Bloggie.Models.DomainModel;
 using Bloggie.Models.Dtos.RequestModels;
 using Bloggie.Models.Dtos.ResponseModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bloggie.Repositories
 {
@@ -14,29 +16,36 @@ namespace Bloggie.Repositories
             this.dbContext = dbContext;
         }
 
-        public Task<MessageResponse> AddAsync(CommentRequest commentRequest)
+        public async Task<MessageResponse> AddAsync(CommentRequest request)
         {
-            throw new NotImplementedException();
+            var comment = new Comment
+            {
+                Content = request.Content,
+                CreatedAt = DateTime.Now,
+                PostId = request.PostId,
+                UserId = request.UserId
+            };
+
+            await dbContext.Comments.AddAsync(comment);
+            await dbContext.SaveChangesAsync();
+
+            return new MessageResponse { Message = "Comment added successfully." };
         }
 
-        public Task<MessageResponse> DeleteByIdAsync(int id)
+        public async Task<List<CommentResponse>> GetAllAsync(int postId)
         {
-            throw new NotImplementedException();
-        }
+    
+            var comments = await dbContext.Comments.AsNoTracking()
+                .Where(c => c.PostId == postId)
+                .Select(c => new CommentResponse
+                {
+                    Id = c.Id,
+                    Content = c.Content,
+                    UserId = c.UserId,
+                })
+                .ToListAsync();
 
-        public Task<List<CommentResponse>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CommentResponse> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<MessageResponse> UpdateAsync(CommentRequest commentRequest, int id)
-        {
-            throw new NotImplementedException();
+            return comments;
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Bloggie.Repositories
                 ImageUrl = blogPostRequest.ImageUrl,
                 UrlHandler = blogPostRequest.UrlHandler,
                 PublishedDate = blogPostRequest.PublishedDate,
-                Author = blogPostRequest.Author,
+                // Author = blogPostRequest.Author,
                 IsVisible = blogPostRequest.IsVisible,
                 Tags = tags
             };
@@ -82,7 +82,7 @@ namespace Bloggie.Repositories
                 ImageUrl = x.ImageUrl,
                 UrlHandler = x.UrlHandler,
                 PublishedDate = x.PublishedDate,
-                Author = x.Author,
+                // Author = x.Author,
                 IsVisible = x.IsVisible,
                 Tags = x.Tags,
             })
@@ -103,7 +103,7 @@ namespace Bloggie.Repositories
                 ImageUrl = x.ImageUrl,
                 UrlHandler = x.UrlHandler,
                 PublishedDate = x.PublishedDate,
-                Author = x.Author,
+                // Author = x.Author,
                 IsVisible = x.IsVisible,
                 Tags = x.Tags,
             })
@@ -142,7 +142,7 @@ namespace Bloggie.Repositories
             existingBlogPost.ImageUrl = blogPostRequest.ImageUrl;
             existingBlogPost.UrlHandler = blogPostRequest.UrlHandler;
             existingBlogPost.PublishedDate = blogPostRequest.PublishedDate;
-            existingBlogPost.Author = blogPostRequest.Author;
+            // existingBlogPost.Author = blogPostRequest.Author;
             existingBlogPost.IsVisible = blogPostRequest.IsVisible;
             existingBlogPost.Tags = tags;
 

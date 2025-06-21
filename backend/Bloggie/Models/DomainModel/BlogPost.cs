@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Bloggie.Models.DomainModel;
 
@@ -28,13 +29,11 @@ public class BlogPost
 
     [Required]
     public DateOnly PublishedDate { get; set; }
+    public string UserId { get; set; }
+    public IdentityUser User { get; set; }
 
     [Required]
-    [StringLength(50, ErrorMessage = "You are allowed to add only 50 characters.")]
-    public string Author { get; set; }
-
-    [Required]
-    public Boolean IsVisible { get; set; }
+    public bool IsVisible { get; set; }
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 }

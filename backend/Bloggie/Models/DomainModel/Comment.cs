@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Bloggie.Models.DomainModel;
 
@@ -11,9 +12,10 @@ public class Comment
     public DateTime CreatedAt { get; set; }
     [Required]
     public int PostId { get; set; }
-    [Required]
-
-    public int UserId { get; set; }
-    
     public BlogPost Post { get; set; }
+    [Required]
+    public string UserId { get; set; }
+    public IdentityUser User { get; set; }
+
+    
 }
