@@ -1,25 +1,23 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useActionData, Form, useRouteLoaderData, redirect, useNavigation, useNavigate } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getAuthToken } from "../../../util/auth";
 import { useEffect } from "react";
+import { fileUploadUsingJson } from "../../../util/cdn";
+import TextEditor from "../../TextEditor";
 
 function PostForm({ method, post }) {
     const [generatedImageUrl, setGeneratedImageUrl] = useState('');
-    const token = useRouteLoaderData('root');
     const [content, setContent] = useState('');
 
     useEffect(() => {
         if (method === 'patch') {
             setContent(post.content)
-             setGeneratedImageUrl(post.imageUrl);
+            setGeneratedImageUrl(post.imageUrl);
         };
 
     }, [post, method]);
-
-   
-
 
     const data = useActionData();
     const navigation = useNavigation();
@@ -28,90 +26,9 @@ function PostForm({ method, post }) {
     const isSubmitting = navigation.state === 'submitting';
 
     function cancelHandler() {
-        navigate('..');
+         navigate( method ==='post' ? '/admin' : '/admin/posts');
+       
     }
-
-    async function fileHandler(event) {
-        const file = event.target.files[0];
-
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-            // console.log(event.target.result);
-            const base64 = reader.result.split(',')[1];
-
-            const imageData = {
-                fileName: file.name,
-                fileContent: base64,
-            }
-
-            let url = 'http://localhost:8080/cdn/urlGenerate';
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify(imageData)
-                });
-
-
-                if (!response.ok) {
-                    throw error('File not uploaded properly.');
-                }
-
-                const resData = await response.json();
-                setGeneratedImageUrl(resData.url);
-            }
-            catch (error) {
-                console.log(error);
-            }
-        }
-
-        reader.readAsDataURL(file);
-
-        // const formData = new FormData();
-        // formData.append('MyFile1', file);
-        // formData.append('MyFile2', file);
-
-        //  let url = 'http://localhost:8080/cdn/upload';
-
-        //     try {
-        //         const response = await fetch(url, {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //                 'Authorization': 'Bearer ' + token
-        //             },
-        //             body: formData
-        //         });
-
-
-        //         if (!response.ok) {
-        //             throw error('File not uploaded properly.');
-        //         }
-
-        //         const resData = await response.json();
-        //         console.log(resData);
-        //         // setGeneratedImageUrl(resData.url);
-        //     }
-        //     catch (error) {
-        //         console.log(error);
-        //     }
-
-
-
-    }
-
-    const modules = {
-        toolbar: [
-            [{ header: [1, 2, false] }],
-            ['bold', 'italic', 'underline'],
-            ['image', 'code-block'],
-        ],
-    };
-
 
     return (
         <div className='container py-3'>
@@ -142,7 +59,7 @@ function PostForm({ method, post }) {
                     <div className="row mb-3">
                         <label htmlFor="content" className="col-sm-2 col-form-label">Content</label>
                         <div className="col-sm-10">
-                            <ReactQuill theme="snow" modules={modules} value={content} onChange={setContent} />
+                            <TextEditor  value={content} onChange={setContent} />
                             <input type="hidden" name="content" value={content} />
                         </div>
                     </div>
@@ -156,10 +73,10 @@ function PostForm({ method, post }) {
                     <div className="row mb-3">
                         <label htmlFor="content" className="col-sm-2 col-form-label">Featured Image Upload</label>
                         <div className="col-sm-10">
-                            <input type="file" className="form-control" id="content" name="content" 
-                            required={!generatedImageUrl}
+                            <input type="file" className="form-control" id="content" name="content"
+                                required={!generatedImageUrl}
                                 defaultValue=''
-                                onChange={fileHandler} />
+                                onChange={async (event) => await fileUploadUsingJson(event, setGeneratedImageUrl)} />
                             {method === 'patch' && post && <div>
                                 <img src={generatedImageUrl} alt='post-image' style={{ height: '200px', width: '230px' }} />
                             </div>}
@@ -176,7 +93,7 @@ function PostForm({ method, post }) {
                     <div className="row mb-3">
                         <label htmlFor="urlHandler" className="col-sm-2 col-form-label">URL Handler</label>
                         <div className="col-sm-10">
-                            <input type="text" className="form-control" id="urlHandler" name="urlHandler" required 
+                            <input type="text" className="form-control" id="urlHandler" name="urlHandler" required
                                 defaultValue={post ? post.urlHandler : ''} />
                         </div>
                     </div>
