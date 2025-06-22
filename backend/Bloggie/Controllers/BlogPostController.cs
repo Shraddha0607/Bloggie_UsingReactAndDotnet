@@ -2,6 +2,7 @@ using Bloggie.Exceptions;
 using Bloggie.Models.Dtos.RequestModels;
 using Bloggie.Models.Dtos.ResponseModels;
 using Bloggie.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bloggie.Controllers
@@ -21,6 +22,7 @@ namespace Bloggie.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> Add(BlogPostRequest blogPostRequest)
         {
             try
@@ -61,6 +63,7 @@ namespace Bloggie.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("id/{id}")]
         public async Task<ActionResult> DeleteById([FromRoute] int id)
         {
@@ -82,12 +85,13 @@ namespace Bloggie.Controllers
         }
 
         [HttpPut("update")]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult> Update([FromBody] BlogPostRequest blogPostRequest, int id)
         {
             try
             {
                 var response = await repo.UpdateAsync(blogPostRequest, id);
-                return Ok(response); 
+                return Ok(response);
             }
             catch (CustomException ex)
             {
@@ -102,7 +106,8 @@ namespace Bloggie.Controllers
         }
 
         [HttpGet("blogPostId/{id}")]
-        public async Task<ActionResult> GetByIdAsync(int id) {
+        public async Task<ActionResult> GetByIdAsync(int id)
+        {
             try
             {
                 var response = await repo.GetByIdAsync(id);

@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BloggieDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieConnectionString")));
 
-
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
@@ -27,7 +26,6 @@ builder.Services.AddScoped<IBlogPostReactionRepo, BlogPostReactionRepo>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskDoner", Version = "v1" });
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -87,7 +85,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -106,7 +103,7 @@ app.UseHttpsRedirection();
 var cdnDir = Path.Combine(builder.Environment.ContentRootPath, "cdn-images");
 if (!Directory.Exists(cdnDir))
 {
-    Directory.CreateDirectory(cdnDir);  // Ensure it exists
+    Directory.CreateDirectory(cdnDir);  
 }
 app.UseStaticFiles(new StaticFileOptions
 {

@@ -29,8 +29,7 @@ public class BlogPostRequest
     public DateOnly PublishedDate { get; set; }
     
     [Required]
-    [StringLength(50, ErrorMessage = "You are allowed to add only 50 characters.")]
-    public string Author { get; set; }
+    public string UserId { get; set; }
 
     [Required]
     public Boolean IsVisible { get; set; }

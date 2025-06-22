@@ -19,7 +19,7 @@ namespace Bloggie.Repositories
 
         public async Task<MessageResponse> AddAsync(BlogPostRequest blogPostRequest)
         {
-            var isValid = await dbContext.BlogPosts.AnyAsync(x => x.Title == blogPostRequest.Title || x.Heading == blogPostRequest.Heading);  
+            var isValid = await dbContext.BlogPosts.AnyAsync(x => x.Title == blogPostRequest.Title || x.Heading == blogPostRequest.Heading);
             if (isValid)
             {
                 throw new CustomException("Already existing blog post! It must be unique.");
@@ -42,7 +42,7 @@ namespace Bloggie.Repositories
                 ImageUrl = blogPostRequest.ImageUrl,
                 UrlHandler = blogPostRequest.UrlHandler,
                 PublishedDate = blogPostRequest.PublishedDate,
-                // Author = blogPostRequest.Author,
+                UserId = blogPostRequest.UserId,
                 IsVisible = blogPostRequest.IsVisible,
                 Tags = tags
             };
@@ -73,6 +73,7 @@ namespace Bloggie.Repositories
         public async Task<List<BlogPostResponse>> GetAllAsync()
         {
             var blogPosts = await dbContext.BlogPosts
+            .Include(b => b.User)
             .Select(x => new BlogPostResponse
             {
                 Id = x.Id,
@@ -82,7 +83,7 @@ namespace Bloggie.Repositories
                 ImageUrl = x.ImageUrl,
                 UrlHandler = x.UrlHandler,
                 PublishedDate = x.PublishedDate,
-                // Author = x.Author,
+                Author = x.User.UserName,
                 IsVisible = x.IsVisible,
                 Tags = x.Tags,
             })
@@ -103,15 +104,15 @@ namespace Bloggie.Repositories
                 ImageUrl = x.ImageUrl,
                 UrlHandler = x.UrlHandler,
                 PublishedDate = x.PublishedDate,
-                // Author = x.Author,
+                Author = x.User.UserName,
                 IsVisible = x.IsVisible,
                 Tags = x.Tags,
             })
             .FirstOrDefaultAsync(x => x.Id == id);
 
-            // if(blogPost == null){
-            //     throw new CustomException("Invalid post Id!");
-            // }
+            if(blogPost == null){
+                throw new CustomException("Invalid post Id!");
+            }
 
             return blogPost;
         }
@@ -142,7 +143,7 @@ namespace Bloggie.Repositories
             existingBlogPost.ImageUrl = blogPostRequest.ImageUrl;
             existingBlogPost.UrlHandler = blogPostRequest.UrlHandler;
             existingBlogPost.PublishedDate = blogPostRequest.PublishedDate;
-            // existingBlogPost.Author = blogPostRequest.Author;
+            existingBlogPost.UserId = blogPostRequest.UserId;
             existingBlogPost.IsVisible = blogPostRequest.IsVisible;
             existingBlogPost.Tags = tags;
 
