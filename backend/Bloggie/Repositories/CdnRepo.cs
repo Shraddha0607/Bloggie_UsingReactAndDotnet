@@ -7,35 +7,63 @@ namespace Bloggie.Repositories;
 public class CdnRepo : ICdnRepo
 {
     private readonly IWebHostEnvironment env;
+    private readonly IHttpContextAccessor httpContext;
 
-    public CdnRepo(IWebHostEnvironment env)
+    public CdnRepo(IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
     {
         this.env = env;
+        httpContext = httpContextAccessor;
     }
 
-    public async Task<ImageUploadResponse> AddImage(ImageUploadRequest imageUploadRequest)
+    public async Task<ImageUploadResponse> AddImage(ImageUploadRequest request)
     {
-        if (string.IsNullOrEmpty(imageUploadRequest.ImageContent) || string.IsNullOrEmpty(imageUploadRequest.ImageName))
+        if (string.IsNullOrEmpty(request.ImageContent) || string.IsNullOrEmpty(request.ImageName))
         {
             throw new CustomException("Image name or content cannot be empty.");
         }
 
-        var fileName = GetFileName(imageUploadRequest.ImageName);
-        var cdnDirPath = Path.Combine(env.ContentRootPath, "cdn-images");
+        var fileName = GetFileName(request.ImageName);
+        var cdnDirPath = GetUploadPath();
+        var filePath = Path.Combine(cdnDirPath, fileName);
 
-        if (!Directory.Exists(cdnDirPath))
-        {
-            Directory.CreateDirectory(cdnDirPath);
-        }
+        var bytes = Convert.FromBase64String(request.ImageContent);
+        await File.WriteAllBytesAsync(filePath, bytes);
 
-        var filePath = Path.Combine(cdnDirPath, fileName);  
+        return new ImageUploadResponse { ImageUrl = GetUrl(fileName) };
+    }
 
-         var bytes = Convert.FromBase64String(imageUploadRequest.ImageContent);
-            await File.WriteAllBytesAsync(filePath, bytes);
+    public async Task<ImageUploadResponse> UploadViaHttpContext()
+    {
+        var files = httpContext.HttpContext!.Request.Form.Files;
 
-        var fullUrl = $"{imageUploadRequest.BaseUrl}/{fileName}";
+        if (files.Count == 0)
+            throw new CustomException("No files received.");
 
-        return new ImageUploadResponse { ImageUrl = fullUrl };
+        var file = files[0];
+        return await UploadByIFormFile(file);
+    }
+
+
+    public async Task<ImageUploadResponse> UploadByIFormFile(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            throw new CustomException("File not selected or uploaded empty file.");
+
+        var uploadsPath = GetUploadPath();
+        var fileName = GetFileName(file.FileName);
+        var filePath = Path.Combine(uploadsPath, fileName);
+        using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        return new ImageUploadResponse { ImageUrl = GetUrl(fileName) };
+    }
+
+    private string GetUploadPath() => Path.Combine(env.ContentRootPath, "cdn-images");
+
+    private string GetUrl(string FileName)
+    {
+        var baseUrl = $"{httpContext.HttpContext!.Request.Scheme}://{httpContext.HttpContext!.Request.Host}";
+        return $"{baseUrl}/{FileName}";
     }
 
     private string GetFileName(string originalFileName)
@@ -44,5 +72,4 @@ public class CdnRepo : ICdnRepo
         var cleaned = originalFileName.ToLower().Replace(" ", "");
         return $"{timeStamp}_{cleaned}";
     }
-
 }

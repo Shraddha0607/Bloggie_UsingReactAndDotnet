@@ -15,6 +15,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("BloggieConnectio
 
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ITagRepo, TagRepo>();
 builder.Services.AddScoped<IBlogPostRepo, BlogPostRepo>();

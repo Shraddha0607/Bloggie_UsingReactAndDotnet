@@ -6,4 +6,7 @@ namespace Bloggie.Repositories;
 public interface ICdnRepo
 {
     Task<ImageUploadResponse> AddImage(ImageUploadRequest imageUploadRequest);
+
+    Task<ImageUploadResponse> UploadViaHttpContext();
+    Task<ImageUploadResponse> UploadByIFormFile(IFormFile file);
 }

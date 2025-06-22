@@ -14,6 +14,7 @@ public class CdnController : ControllerBase
     private readonly ICdnRepo repo;
     private readonly ILogger logger;
 
+
     public CdnController(ICdnRepo repo, ILogger<CdnController> logger)
     {
         this.repo = repo;
@@ -25,9 +26,50 @@ public class CdnController : ControllerBase
     {
         try
         {
-            var baseUrl = $"{Request.Scheme}://{Request.Host}";
-            imageUploadRequest.BaseUrl = baseUrl;
             var response = await repo.AddImage(imageUploadRequest);
+            return Ok(response);
+        }
+
+        catch (CustomException ex)
+        {
+            logger.LogError(ex.Message);
+            return BadRequest(new MessageResponse { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return BadRequest(ex.Message);
+        }
+    }
+
+
+    [HttpPost("upload")]
+    public async Task<IActionResult> UploadViaHttpContext()
+    {
+        try
+        {
+            var response = await repo.UploadViaHttpContext();
+            return Ok(response);
+        }
+
+        catch (CustomException ex)
+        {
+            logger.LogError(ex.Message);
+            return BadRequest(new MessageResponse { Message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("upload1")]
+    public async Task<IActionResult> Upload1(IFormFile file)
+    {
+        try
+        {
+            var response = await repo.UploadByIFormFile(file);
             return Ok(response);
         }
 

@@ -9,5 +9,4 @@ public class ImageUploadRequest
     public string ImageName { get; set; }
     [Required]
     public string ImageContent { get; set; }
-    public string? BaseUrl { get; set; }
 }
