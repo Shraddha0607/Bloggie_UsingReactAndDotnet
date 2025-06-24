@@ -4,7 +4,7 @@ import PostForm from "./PostForm";
 
 function EditPostPage() {
     const data = useRouteLoaderData('post-details');
-    return <PostForm method='patch' post={data.post} />
+    return <PostForm method='put' post={data.post} />
 }
 
 export default EditPostPage;

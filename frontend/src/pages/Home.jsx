@@ -24,8 +24,8 @@ function Home() {
 export default Home
 
 export async function loader() {
-  const response = await fetch('http://localhost:8080/posts');
-  const tagResponse = await fetch('http://localhost:8080/tags');
+  const response = await fetch('http://localhost:5243/BlogPost/all');
+  const tagResponse = await fetch('http://localhost:5243/Tag/all');
 
   if (!response.ok) {
     throw new Response({
@@ -51,8 +51,8 @@ export async function loader() {
     const tagResData = await tagResponse.json();
 
     return {
-      posts: resData.posts,
-      tags: tagResData.tags
+      posts: resData,
+      tags: tagResData
     };
   }
 }

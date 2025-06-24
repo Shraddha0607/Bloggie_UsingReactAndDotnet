@@ -38,7 +38,7 @@ function PostList({ posts }) {
                                     <td>
                                         <ul>
                                             {post.tags.map((tag) => (
-                                                <button key={tag}><span >{tag}</span></button>
+                                                <button key={tag.id}><span >{tag.name}</span></button>
                                     ))}
                                         </ul>
 

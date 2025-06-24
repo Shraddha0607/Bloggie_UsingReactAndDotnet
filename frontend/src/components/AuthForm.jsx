@@ -21,6 +21,12 @@ function AuthForm() {
                         <input type="password" className="form-control" id="password" name="password" required />
                     </div>
                 </div>
+                {!isLogin && <div className="row mb-3">
+                    <label htmlFor="roles" className="col-sm-2 col-form-label">Role</label>
+                    <div className="col-sm-10">
+                        <input type="tet" className="form-control" id="roles" name="roles" required />
+                    </div>
+                </div>}
                 <div>
                     <Link to={`?mode=${isLogin ? 'signup' : 'login'}`}>
                         {isLogin ? 'Create new user' : 'Login'}
@@ -46,11 +52,45 @@ export async function action({ request }) {
 
     const data = await request.formData();
     const authData = {
-        email: data.get('email'),
-        password: data.get('password'),
+        username: data.get('email'),
+        password: data.get('password')
     };
 
-    const response = await fetch('http://localhost:8080/users/' + mode, {
+    if (mode === 'signup') {
+        authData.role = data.get('roles');
+
+        await signup(authData);
+    }
+    else {
+        await login(authData);
+    }
+
+    return redirect('/');
+
+}
+
+
+async function signup(authData) {
+    const response = await fetch('http://localhost:5243/Auth/Register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(authData)
+    });
+
+    if (response.status === 422 || response.status === 401) {
+        return response;
+    }
+
+    if (!response.ok) {
+        throw new Response({ message: 'Could not add user!' }, { status: 500 });
+    }
+
+}
+
+async function login(authData) {
+    const response = await fetch('http://localhost:5243/Auth/Login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -67,13 +107,12 @@ export async function action({ request }) {
     }
 
     const resData = await response.json();
-    const token = resData.token;
+    const token = resData.jwtToken;
+    const userId = resData.id;
 
     localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId);
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 1);
     localStorage.setItem('expiration', expiration.toISOString());
-
-    return redirect('/');
-
 }

@@ -8,6 +8,7 @@ namespace Bloggie.Repositories
     {
         Task<MessageResponse> AddAsync(BlogPostRequest blogPostRequest);
         Task<BlogPostResponse> GetByIdAsync(int id);
+        Task<BlogPostResponse> GetByUrlAsync(string url);
         Task<MessageResponse> DeleteByIdAsync(int id);
         Task<MessageResponse> UpdateAsync(BlogPostRequest blogPostRequest, int id);
         Task<List<BlogPostResponse>> GetAllAsync();

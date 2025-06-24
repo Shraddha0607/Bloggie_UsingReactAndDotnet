@@ -15,6 +15,7 @@ public class BlogPostResponse
     public string ImageUrl { get; set; }
     
     public string UrlHandler { get; set; }
+    public string ShortDescription { get; set; }
 
     public DateOnly PublishedDate { get; set; }
     

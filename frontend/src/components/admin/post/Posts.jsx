@@ -18,7 +18,7 @@ function PostsPage() {
 export default PostsPage;
 
 export async function loader() {
-    const response = await fetch('http://localhost:8080/posts');
+    const response = await fetch('http://localhost:5243/BlogPost/all');
 
     if (!response.ok) {
         throw new Response({
@@ -30,7 +30,7 @@ export async function loader() {
     }
     else {
         const resData = await response.json();
-        return { posts: resData.posts };
+        return { posts: resData };
     }
 }
 
@@ -40,7 +40,7 @@ export async function action({ params, request }) {
     const postId = params.postId;
     const token = getAuthToken();
 
-    const response = await fetch('http://localhost:8080/posts/' + postId, {
+    const response = await fetch('http://localhost:5243/BlogPost/id/' + postId, {
         method: request.method,
         headers: {
             'Authorization': 'Bearer ' + token

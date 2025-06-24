@@ -22,6 +22,12 @@ public class BlogPostReactionRepo : IBlogPostReactionRepo
 
     public async Task<MessageResponse> AddReaction(BlogPostReactionRequest request)
     {
+        var isValidBlog =  dbContext.BlogPosts.Any(x => x.Id == request.BlogId);
+        if (!isValidBlog)
+        {
+            throw new CustomException("Blog Id is invalid!");
+        }
+
         var reaction = await dbContext.BlogPostReactions
            .FirstOrDefaultAsync(r => r.BlogPostId == request.BlogId && r.UserId == request.UserId);
 
@@ -48,7 +54,15 @@ public class BlogPostReactionRepo : IBlogPostReactionRepo
             }
         }
 
-        await dbContext.SaveChangesAsync();
+        try
+        {
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.InnerException?.Message); 
+        }
         return new MessageResponse { Message = "Reaction added successfully." };
 
     }

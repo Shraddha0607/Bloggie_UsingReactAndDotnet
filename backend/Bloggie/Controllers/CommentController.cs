@@ -2,6 +2,7 @@ using Bloggie.Exceptions;
 using Bloggie.Models.Dtos.RequestModels;
 using Bloggie.Models.Dtos.ResponseModels;
 using Bloggie.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bloggie.Controllers
@@ -14,13 +15,14 @@ namespace Bloggie.Controllers
         private readonly ICommentRepo repo;
         private readonly ILogger logger;
 
-        public CommentController(ICommentRepo repo, ILogger logger)
+        public CommentController(ICommentRepo repo, ILogger<CommentController> logger)
         {
             this.repo = repo;
             this.logger = logger;
         }
 
         [HttpPost]
+        [Authorize("user")]
         public async Task<ActionResult> Add(CommentRequest commentRequest)
         {
             try

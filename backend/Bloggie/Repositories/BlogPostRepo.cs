@@ -41,6 +41,7 @@ namespace Bloggie.Repositories
                 Content = blogPostRequest.Content,
                 ImageUrl = blogPostRequest.ImageUrl,
                 UrlHandler = blogPostRequest.UrlHandler,
+                ShortDescription = blogPostRequest.ShortDescription,
                 PublishedDate = blogPostRequest.PublishedDate,
                 UserId = blogPostRequest.UserId,
                 IsVisible = blogPostRequest.IsVisible,
@@ -82,6 +83,7 @@ namespace Bloggie.Repositories
                 Content = x.Content,
                 ImageUrl = x.ImageUrl,
                 UrlHandler = x.UrlHandler,
+                ShortDescription = x.ShortDescription,
                 PublishedDate = x.PublishedDate,
                 Author = x.User.UserName,
                 IsVisible = x.IsVisible,
@@ -103,6 +105,7 @@ namespace Bloggie.Repositories
                 Content = x.Content,
                 ImageUrl = x.ImageUrl,
                 UrlHandler = x.UrlHandler,
+                ShortDescription = x.ShortDescription,
                 PublishedDate = x.PublishedDate,
                 Author = x.User.UserName,
                 IsVisible = x.IsVisible,
@@ -112,6 +115,32 @@ namespace Bloggie.Repositories
 
             if(blogPost == null){
                 throw new CustomException("Invalid post Id!");
+            }
+
+            return blogPost;
+        }
+
+        public async Task<BlogPostResponse> GetByUrlAsync(string url)
+        {
+           var blogPost = await dbContext.BlogPosts
+            .Select(x => new BlogPostResponse
+            {
+                Id = x.Id,
+                Heading = x.Heading,
+                Title = x.Title,
+                Content = x.Content,
+                ImageUrl = x.ImageUrl,
+                UrlHandler = x.UrlHandler,
+                ShortDescription = x.ShortDescription,
+                PublishedDate = x.PublishedDate,
+                Author = x.User.UserName,
+                IsVisible = x.IsVisible,
+                Tags = x.Tags,
+            })
+            .FirstOrDefaultAsync(x => x.UrlHandler == url);
+
+            if(blogPost == null){
+                throw new CustomException("Invalid post url!");
             }
 
             return blogPost;
@@ -142,6 +171,7 @@ namespace Bloggie.Repositories
             existingBlogPost.Content = blogPostRequest.Content;
             existingBlogPost.ImageUrl = blogPostRequest.ImageUrl;
             existingBlogPost.UrlHandler = blogPostRequest.UrlHandler;
+            existingBlogPost.ShortDescription = blogPostRequest.ShortDescription;
             existingBlogPost.PublishedDate = blogPostRequest.PublishedDate;
             existingBlogPost.UserId = blogPostRequest.UserId;
             existingBlogPost.IsVisible = blogPostRequest.IsVisible;

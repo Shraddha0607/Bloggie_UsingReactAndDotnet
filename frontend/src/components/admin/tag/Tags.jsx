@@ -18,7 +18,7 @@ function TagsPage() {
 export default TagsPage;
 
 export async function loader() {
-    const response = await fetch('http://localhost:8080/tags');
+    const response = await fetch('http://localhost:5243/Tag/all');
 
     if (!response.ok) {
         throw new Response({
@@ -30,7 +30,7 @@ export async function loader() {
     }
     else {
         const resData = await response.json();
-        return { tags: resData.tags };
+        return { tags: resData };
     }
 }
 
@@ -40,7 +40,7 @@ export async function action({ params, request }) {
     const tagId = params.tagId;
     const token = getAuthToken();
 
-    const response = await fetch('http://localhost:8080/tags/' + tagId, {
+    const response = await fetch('http://localhost:5243/Tag/id/' + tagId, {
         method: request.method,
         headers: {
             'Authorization': 'Bearer ' + token

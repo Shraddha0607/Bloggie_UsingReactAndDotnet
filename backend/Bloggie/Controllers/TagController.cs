@@ -86,7 +86,7 @@ namespace Bloggie.Controllers
 
         [HttpPut("update")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> Update([FromBody] TagRequest tagRequest, int id)
+        public async Task<ActionResult> Update([FromBody] TagRequest tagRequest, [FromQuery] int id)
         {
             try
             {

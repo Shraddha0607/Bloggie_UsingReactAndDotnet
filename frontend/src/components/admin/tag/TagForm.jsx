@@ -2,6 +2,8 @@ import { Link, useSearchParams, useNavigate, Form, redirect, useActionData, useN
 import { getAuthToken } from '../../../util/auth';
 
 function TagForm({ method, tag }) {
+
+    console.log("method is ", method, " tag is ", tag);
     const data = useActionData();
     const navigation = useNavigation();
     const navigate = useNavigate();
@@ -53,7 +55,7 @@ export default TagForm;
 
 export async function loader({ request, params }) {
     const id = params.tagId;
-    const response = await fetch('http://localhost:8080/tags/' + id);
+    const response = await fetch('http://localhost:5243/Tag/tagId/' + id);
 
     if (!response.ok) {
         throw new Response(
@@ -65,7 +67,7 @@ export async function loader({ request, params }) {
     } else {
         const resData = await response.json();
         return {
-            tag: resData.tag,
+            tag: resData,
         };
     }
 }
@@ -79,12 +81,12 @@ export async function action({ request, params }) {
         displayName: data.get('displayName'),
     };
 
-    let url = 'http://localhost:8080/tags';
+    let url = 'http://localhost:5243/Tag';
 
-    if (method === 'PATCH') {
+    if (method === 'PUT') {
         console.log("inside patch");
         const tagId = params.tagId;
-        url = 'http://localhost:8080/tags/' + tagId;
+        url = `http://localhost:5243/Tag/update?id=${tagId}`;
     }
 
     const token = getAuthToken();

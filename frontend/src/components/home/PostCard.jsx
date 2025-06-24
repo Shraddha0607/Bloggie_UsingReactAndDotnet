@@ -12,7 +12,7 @@ function PostCard({ post }) {
                 </div>
                 <div className="mt-4 mb-3">
                     {post.tags && post.tags.map((tag) => (
-                        <span key={tag.id}><button>{tag}</button></span>
+                        <span key={tag.id}><button>{tag.name}</button></span>
                     ))}
                 </div>
                 <p className="card-text">{post.shortDescription}</p>

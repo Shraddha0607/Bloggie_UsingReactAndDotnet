@@ -27,11 +27,7 @@ public class BloggieDbContext : IdentityDbContext
         .IsUnique();
 
         modelBuilder.Entity<BlogPostReaction>()
-        .HasIndex(b => b.BlogPostId)
-        .IsUnique();
-
-        modelBuilder.Entity<BlogPostReaction>()
-        .HasIndex(b => b.UserId)
+        .HasIndex(b => new { b.BlogPostId, b.UserId })
         .IsUnique();
 
         modelBuilder.Entity<BlogPost>()
@@ -39,7 +35,7 @@ public class BloggieDbContext : IdentityDbContext
         .IsUnique();
 
         modelBuilder.Entity<BlogPost>()
-        .HasIndex(b => b.ImageUrl)
+        .HasIndex(b => b.UrlHandler)
         .IsUnique();
 
         modelBuilder.Entity<Comment>()
@@ -52,15 +48,15 @@ public class BloggieDbContext : IdentityDbContext
 
         modelBuilder.Entity<BlogPost>()
             .HasOne(b => b.User)
-            .WithMany() 
+            .WithMany()
             .HasForeignKey(b => b.UserId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<BlogPostReaction>()
             .HasOne(r => r.User)
-            .WithMany() 
+            .WithMany()
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
 
         var userRoleId = "9e57ac33-93e9-45b2-bb96-49bf6b08ffdf";
         var adminRoleId = "5b1a041c-3596-478d-b78b-3388c23b03bb";

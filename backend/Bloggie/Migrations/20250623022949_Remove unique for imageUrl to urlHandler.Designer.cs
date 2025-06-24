@@ -4,6 +4,7 @@ using Bloggie.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bloggie.Migrations
 {
     [DbContext(typeof(BloggieDbContext))]
-    partial class BloggieDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250623022949_Remove unique for imageUrl to urlHandler")]
+    partial class RemoveuniqueforimageUrltourlHandler
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace Bloggie.Migrations
                     b.Property<DateOnly>("PublishedDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("ShortDescription")
+                    b.Property<string>("ShortDiscription")
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
@@ -117,9 +120,10 @@ namespace Bloggie.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BlogPostId")
+                        .IsUnique();
 
-                    b.HasIndex("BlogPostId", "UserId")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("BlogPostReactions");

@@ -9,11 +9,11 @@ export async function fileUploadUsingJson(event, callback) {
          const base64 = reader.result.split(',')[1];
 
          const imageData = {
-             fileName: file.name,
-             fileContent: base64,
+             ImageName: file.name,
+             ImageContent: base64,
          }
 
-         let url = 'http://localhost:8080/cdn/urlGenerate';
+         let url = 'http://localhost:5243/cdn';
 
          try {
              const response = await fetch(url, {
@@ -31,7 +31,9 @@ export async function fileUploadUsingJson(event, callback) {
              }
 
              const resData = await response.json();
-             callback(resData.url);
+             console.log("image url ", resData);
+
+             callback(resData.imageUrl);
          } catch (error) {
              console.log(error);
          }

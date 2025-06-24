@@ -19,6 +19,11 @@ public class BlogPost
     public string Content { get; set; }
 
     [Required]
+    [StringLength(320, ErrorMessage = "You are allowed to add only 320 characters.")]
+    public string ShortDescription { get; set; } = "Description";
+
+
+    [Required]
     [Url]
     [StringLength(128, ErrorMessage = "You are allowed to add only 128 characters.")]
     public string ImageUrl { get; set; }

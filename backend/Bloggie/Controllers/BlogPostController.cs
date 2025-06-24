@@ -22,7 +22,7 @@ namespace Bloggie.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Add(BlogPostRequest blogPostRequest)
         {
             try
@@ -85,7 +85,7 @@ namespace Bloggie.Controllers
         }
 
         [HttpPut("update")]
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Update([FromBody] BlogPostRequest blogPostRequest, int id)
         {
             try
@@ -111,6 +111,26 @@ namespace Bloggie.Controllers
             try
             {
                 var response = await repo.GetByIdAsync(id);
+                return Ok(response);
+            }
+            catch (CustomException ex)
+            {
+                logger.LogError(ex.Message);
+                return BadRequest(new MessageResponse { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("byUrl/{url}")]
+        public async Task<ActionResult> GetByUrlAsync(string url)
+        {
+            try
+            {
+                var response = await repo.GetByUrlAsync(url);
                 return Ok(response);
             }
             catch (CustomException ex)

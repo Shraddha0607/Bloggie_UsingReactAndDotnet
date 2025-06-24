@@ -53,6 +53,16 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+    policy => policy.WithOrigins("http://localhost:5173")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    );
+});
+
+
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("CollegeApp")
@@ -92,6 +102,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowReact");
 
 app.UseAuthentication();
 app.UseAuthorization();

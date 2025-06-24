@@ -17,7 +17,7 @@ public class BlogPostReactionController : ControllerBase
     private readonly ILogger logger;
     private readonly IBlogPostReactionRepo repo;
 
-    BlogPostReactionController(IBlogPostReactionRepo repo, ILogger<BlogPostReactionController> logger)
+    public BlogPostReactionController(IBlogPostReactionRepo repo, ILogger<BlogPostReactionController> logger)
     {
         this.repo = repo;
         this.logger = logger;

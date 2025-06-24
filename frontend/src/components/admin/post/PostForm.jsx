@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { useActionData, Form, useRouteLoaderData, redirect, useNavigation, useNavigate } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { getAuthToken } from "../../../util/auth";
+import { getAuthToken, getUser } from "../../../util/auth";
 import { useEffect } from "react";
 import { fileUploadUsingJson } from "../../../util/cdn";
 import TextEditor from "../../TextEditor";
@@ -10,6 +10,9 @@ import TextEditor from "../../TextEditor";
 function PostForm({ method, post }) {
     const [generatedImageUrl, setGeneratedImageUrl] = useState('');
     const [content, setContent] = useState('');
+    const userName = getUser();
+    const [isVisible, setIsVisible] = useState(post ? post.isVisible : false);
+    console.log("isVisible", isVisible);
 
     useEffect(() => {
         if (method === 'patch') {
@@ -108,11 +111,11 @@ function PostForm({ method, post }) {
                         <label htmlFor="author" className="col-sm-2 col-form-label">Author</label>
                         <div className="col-sm-10">
                             <input type="text" className="form-control" id="author" name="author" required
-                                defaultValue={post ? post.author : ''} />
+                                defaultValue={userName} />
                         </div>
                     </div>
                     <div className="mb-3 form-check">
-                        <input type="checkbox" className="form-check-input" id="isVisible" name="isVisible" defaultChecked={post ? post.isVisible : false} />
+                        <input type="checkbox" className="form-check-input" id="isVisible" name="isVisible" checked={isVisible} onChange={(event) => setIsVisible(event.target.checked)} />
                         <label className="form-check-label" htmlFor="isVisible" >Is Visible </label>
                     </div>
 
@@ -162,23 +165,22 @@ export async function action({ request, params }) {
         imageUrl: data.get('imageUrl'),
         urlHandler: data.get('urlHandler'),
         publishedDate: data.get('publishedDate'),
-        author: data.get('author'),
-        isVisible: data.get('isVisible'),
-        tags: [],
+        userId: data.get('author'),
+        isVisible: data.get('isVisible') === 'on' ? true: false,
+        tagIds: [],
         likes: 0,
         dislikes: 0,
         comments: []
 
     };
 
-    console.log("post data is ", PostData);
+    console.log(PostData, " postdata");
 
-    let url = 'http://localhost:8080/posts';
+    let url = 'http://localhost:5243/BlogPost';
 
-    if (method === 'PATCH') {
-        console.log("inside patch");
+    if (method === 'PUT') {
         const postId = params.postId;
-        url = 'http://localhost:8080/posts/' + postId;
+        url = `http://localhost:5243/BlogPost/update/?id=${postId}`;  
     }
 
     const token = getAuthToken();
