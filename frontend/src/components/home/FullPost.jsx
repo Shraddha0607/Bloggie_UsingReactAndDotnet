@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
-import { useLoaderData, Form } from 'react-router-dom';
+import { useLoaderData , useFetcher} from 'react-router-dom';
 import { getAuthToken, getUser } from '../../util/auth';
 
 function FullPost() {
@@ -9,17 +9,29 @@ function FullPost() {
     const authData = getAuthToken();
     const token = authData?.token;
     const isAdmin = authData?.roles === 'Admin';
+    const userId =getUser();
 
     const { post } = useLoaderData();
-    const userId = getUser();
+    let fetcher = useFetcher();
 
     const [likes, setLikes] = useState();
     const [dislikes, setDislikes] = useState();
     const [comments, setComments] = useState([]);
     const [showComments, setShowComments] = useState(false);
+    
+    useEffect(() => {
+            fetchReaction();
+    }, []);
 
     useEffect(() => {
-        const fetchReaction = async () => {
+        if(fetcher.state === 'idle') {
+            fetchReaction();
+            const commentInput = document.getElementById('comment');
+            if (commentInput) commentInput.value = '';
+        }
+    }, [fetcher.state]);
+
+    const fetchReaction = async () => {
 
             try {
                 const reactionResponse = await fetch(`http://localhost:5243/BlogPostReaction?PostId=${post.id}&UserId=${userId}`);
@@ -38,16 +50,12 @@ function FullPost() {
 
                 setLikes(reactionResData.likeCount);
                 setDislikes(reactionResData.disLikeCount);
-                setComments(commentResData);
+                setComments([...commentResData]);
             }
             catch (error) {
-
+                console.error(error);
             }
-
-        }
-
-        fetchReaction();
-    }, []);
+        };
 
     const dislikeHandler = async () => {
 
@@ -77,6 +85,7 @@ function FullPost() {
             }
             else {
                 alert("Thank you for your feedback.");
+                await fetchReaction(); 
             }
         }
         catch (error) {
@@ -85,7 +94,6 @@ function FullPost() {
 
     const likeHandler = async () => {
         try {
-            console.log("like clicked");
             const id = post.id;
 
             const reactionData = {
@@ -93,7 +101,6 @@ function FullPost() {
                 userId: userId,
                 userReaction: 1
             };
-
 
             const url = 'http://localhost:5243/BlogPostReaction';
 
@@ -114,9 +121,11 @@ function FullPost() {
             }
             else {
                 alert("Thank you for your feedback.");
+                await fetchReaction(); 
             }
         }
         catch (error) {
+            console.error(error);
         }
     }
 
@@ -165,15 +174,15 @@ function FullPost() {
             </div>
             {!isAdmin && <div className="card m-3" >
                 <div className="card-body ">
-                    <Form method='post'>
+                    <fetcher.Form method='post'>
                         <input type="hidden" name="postId" value={post.id} />
                         <input type="hidden" name="userId" value={userId} />
                         <div className="mb-3">
                             <label htmlFor="comment" className="form-label"><strong>Comment</strong></label>
                             <input type="text" className="form-control" id="comment" name="comment" required />
                         </div>
-                        <button className="btn btn-dark">Submit</button>
-                    </Form>
+                       <button className="btn btn-dark"> {fetcher.state === 'submitting' ? 'Submitting' : 'Submit'}</button>
+                    </fetcher.Form>
                 </div>
             </div>}
 
