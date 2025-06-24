@@ -39,11 +39,7 @@ public class BloggieDbContext : IdentityDbContext
         .IsUnique();
 
         modelBuilder.Entity<Comment>()
-        .HasIndex(b => b.PostId)
-        .IsUnique();
-
-        modelBuilder.Entity<Comment>()
-        .HasIndex(b => b.UserId)
+        .HasIndex(b => new { b.PostId, b.UserId })
         .IsUnique();
 
         modelBuilder.Entity<BlogPost>()

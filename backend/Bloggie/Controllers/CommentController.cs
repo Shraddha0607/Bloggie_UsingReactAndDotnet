@@ -22,12 +22,17 @@ namespace Bloggie.Controllers
         }
 
         [HttpPost]
-        [Authorize("user")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult> Add(CommentRequest commentRequest)
         {
             try
             {
                 var response = await repo.AddAsync(commentRequest);
+                if (response.Message == "You already submitted your review.")
+                {
+                    return Conflict(response); // 409
+                }
+
                 return Ok(response);
             }
             catch (CustomException ex)
@@ -38,7 +43,7 @@ namespace Bloggie.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                return BadRequest(new MessageResponse { Message = ex.Message });
             }
         }
 
@@ -58,7 +63,7 @@ namespace Bloggie.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                return BadRequest(new MessageResponse { Message = ex.Message });
             }
         }
 

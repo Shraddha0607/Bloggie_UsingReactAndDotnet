@@ -6,22 +6,22 @@ import { getAuthToken, getUser } from '../../util/auth';
 
 function FullPost() {
 
-    const token = getAuthToken();
+    const authData = getAuthToken();
+    const token = authData?.token;
+    const isAdmin = authData?.roles === 'Admin';
+
     const { post } = useLoaderData();
     const userId = getUser();
 
     const [likes, setLikes] = useState();
     const [dislikes, setDislikes] = useState();
     const [comments, setComments] = useState([]);
-    console.log(comments.length); 
-
-    // const url = 'http://localhost:8080/posts/';
+    const [showComments, setShowComments] = useState(false);
 
     useEffect(() => {
         const fetchReaction = async () => {
 
             try {
-                console.log("Before fetching reaction");
                 const reactionResponse = await fetch(`http://localhost:5243/BlogPostReaction?PostId=${post.id}&UserId=${userId}`);
                 const commentResponse = await fetch(`http://localhost:5243/Comment?PostId=${post.id}`);
 
@@ -35,11 +35,10 @@ function FullPost() {
 
                 const reactionResData = await reactionResponse.json();
                 const commentResData = await commentResponse.json();
-                console.log("comments ", commentResData, " and length is ", commentResData.length);
 
                 setLikes(reactionResData.likeCount);
                 setDislikes(reactionResData.disLikeCount);
-                setComments(...commentResData);
+                setComments(commentResData);
             }
             catch (error) {
 
@@ -114,12 +113,15 @@ function FullPost() {
                 )
             }
             else {
-                console.log("like api done");
                 alert("Thank you for your feedback.");
             }
         }
         catch (error) {
         }
+    }
+
+    function commentHandler() {
+        setShowComments(!showComments);
     }
 
     return (
@@ -139,15 +141,29 @@ function FullPost() {
 
                 <span><FontAwesomeIcon icon={faThumbsUp} onClick={likeHandler} /> {likes}</span>
                 <span style={{ marginLeft: '1rem' }}><FontAwesomeIcon icon={faThumbsDown} onClick={dislikeHandler} /> {dislikes}</span>
-                {comments.length > 0 && <div>
-                    <p>dghjk</p>
-                    {comments.map((comment) => {
-                        console.log(comment)
-                        return (<p key={comment.id}>{comment.content}</p>)
-})}
-                </div>}
+                <div>
+                    <button onClick={commentHandler}>
+                        {showComments ? "Hide comments" : "Show comments"}
+                    </button>
+
+                    {showComments && (
+                        <div>
+                            <h6>All Comments</h6>
+                            {comments.length > 0 ? (
+                                <div>
+                                    {comments.map((comment) => (
+                                        <p key={comment.id}>{comment.content}</p>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No comments found.</p>
+                            )}
+                        </div>
+                    )}
+                </div>
+
             </div>
-            <div className="card m-3" >
+            {!isAdmin && <div className="card m-3" >
                 <div className="card-body ">
                     <Form method='post'>
                         <input type="hidden" name="postId" value={post.id} />
@@ -159,7 +175,7 @@ function FullPost() {
                         <button className="btn btn-dark">Submit</button>
                     </Form>
                 </div>
-            </div>
+            </div>}
 
         </div>
     )
@@ -199,45 +215,31 @@ export async function action({ params, request }) {
     console.log(commentData, " is the comment payload");
 
     let url = 'http://localhost:5243/Comment';
-    const token = getAuthToken();
+    const token = getAuthToken().token;
 
     const response = await fetch(url, {
-        method : 'POST',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + token
         },
         body: JSON.stringify(commentData)
     });
-    
+
     if (response.status === 422 || response.status === 401) {
         return response;
     }
-    if(!response.ok) {
-        throw new Response ({ message : 'Could not add comment!'}, {status : 500});
-    }
 
     const resData = await response.json();
-    console.log(resData, " is the return data");
+    if (response.status === 409) {
+        alert(resData.message);
+        return;
+    }
+
+    if (!response.ok) {
+        throw new Response({ message: 'Could not add comment!' }, { status: 500 });
+    }
+
     alert('Thank you for your review comment.');
 
 }
-
-
-//     let url = 'http://localhost:5243/Tag';
-//     const token = getAuthToken();
-
-//     const response = await fetch(url, {
-//         method: method,
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': 'Bearer ' + token
-//         },
-//         body: JSON.stringify(tagData)
-//     });
-
-//     const resData = await response.json();
-
-//     return redirect('/admin/tags');
-
-// }

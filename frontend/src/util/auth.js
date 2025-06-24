@@ -1,3 +1,7 @@
+import {
+    jwtDecode
+} from 'jwt-decode';
+
 export function getTokenDuration() {
     const storedExpirationDate = localStorage.getItem('expiration');
     const expirationDate = new Date(storedExpirationDate);
@@ -13,13 +17,26 @@ export function getAuthToken() {
         return null;
     }
 
+    const decoded = jwtDecode(token);
+    const roles = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    const userName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+
     const tokenDuration = getTokenDuration();
 
     if (tokenDuration < 0) {
         return 'EXPIRED';
     }
 
-    return token;
+    return {
+        token,
+        roles,
+        userName
+    };
+}
+
+export function getUser() {
+    const user = localStorage.getItem('userId');
+    return user;
 }
 
 export function loader() {
