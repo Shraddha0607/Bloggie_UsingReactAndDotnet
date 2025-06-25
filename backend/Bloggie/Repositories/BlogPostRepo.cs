@@ -156,7 +156,7 @@ namespace Bloggie.Repositories
                 throw new CustomException("Invalid blog post id!");
             }
 
-            var isValid = dbContext.BlogPosts.Any(x => x.Title == blogPostRequest.Title || x.Heading == blogPostRequest.Heading);
+            var isValid = dbContext.BlogPosts.Any(x => x.Id != id && (x.Title == blogPostRequest.Title || x.Heading == blogPostRequest.Heading));
             if (isValid)
             {
                 throw new CustomException("Already existing blog title or heading! It must be unique.");

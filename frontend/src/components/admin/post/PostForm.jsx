@@ -1,20 +1,40 @@
-import { useState, useRef, useCallback } from "react";
-import { useActionData, Form, useRouteLoaderData, redirect, useNavigation, useNavigate } from "react-router-dom";
-import ReactQuill from 'react-quill';
+import { useState } from "react";
+import { useActionData, Form, redirect, useNavigation, useNavigate } from "react-router-dom";
 import 'react-quill/dist/quill.snow.css';
 import { getAuthToken, getUser } from "../../../util/auth";
 import { useEffect } from "react";
 import { fileUploadUsingJson } from "../../../util/cdn";
 import TextEditor from "../../TextEditor";
+import { fetchTags } from '../../../util/common';
 
 function PostForm({ method, post }) {
-    const [generatedImageUrl, setGeneratedImageUrl] = useState('');
-    const [content, setContent] = useState('');
+    const [generatedImageUrl, setGeneratedImageUrl] = useState(post ? post.imageUrl : '');
+    const [content, setContent] = useState(post ? post.content : '');
     const userName = getUser();
     const [isVisible, setIsVisible] = useState(post ? post.isVisible : false);
-    console.log("isVisible", isVisible);
+    const [tags, setTags] = useState([]);
+
+    const allSelectedTag = post && post.tags && post.tags.map(tag => parseInt(tag.id));
+
+    const [selectedTags, setSelectedTags] = useState(allSelectedTag ? allSelectedTag : []);
+
+    const tagHandler = (tag) => {
+        setSelectedTags((prevSelected) => {
+            if (prevSelected.includes(tag.id)) {
+                return prevSelected.filter((id) => id !== tag.id);
+            } else {
+                return [...prevSelected, tag.id];
+            }
+        });
+    };
 
     useEffect(() => {
+        const getTags = async () => {
+            const { tags } = await fetchTags();
+            setTags(tags);
+        }
+        getTags();
+
         if (method === 'patch') {
             setContent(post.content)
             setGeneratedImageUrl(post.imageUrl);
@@ -29,8 +49,7 @@ function PostForm({ method, post }) {
     const isSubmitting = navigation.state === 'submitting';
 
     function cancelHandler() {
-         navigate( method ==='post' ? '/admin' : '/admin/posts');
-       
+        navigate(method === 'post' ? '/admin' : '/admin/posts');
     }
 
     return (
@@ -62,7 +81,7 @@ function PostForm({ method, post }) {
                     <div className="row mb-3">
                         <label htmlFor="content" className="col-sm-2 col-form-label">Content</label>
                         <div className="col-sm-10">
-                            <TextEditor  value={content} onChange={setContent} />
+                            <TextEditor value={content} onChange={setContent} />
                             <input type="hidden" name="content" value={content} />
                         </div>
                     </div>
@@ -118,6 +137,20 @@ function PostForm({ method, post }) {
                         <input type="checkbox" className="form-check-input" id="isVisible" name="isVisible" checked={isVisible} onChange={(event) => setIsVisible(event.target.checked)} />
                         <label className="form-check-label" htmlFor="isVisible" >Is Visible </label>
                     </div>
+                    <div className="dropdown">
+                        <button className="btn btn-secondary dropdown-toggle mb-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Tags
+                        </button>
+                        <input type="hidden" name="selectedTags" value={selectedTags.join(',')} />
+                        <ul className="dropdown-menu">
+                            {tags.map((tag) => (
+                                <li key={tag.id} className="dropdown-item  ${selectedTags.includes(tag.id) ? 'active' : ''}`" onClick={() => tagHandler(tag)} >
+                                    {tag.displayName}
+                                    {selectedTags.includes(tag.id) && <span>&#10003;</span>}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <div className='d-flex justify-content-start'>
                         <button type="button" onClick={cancelHandler} disabled={isSubmitting} className="mx-2">
@@ -136,7 +169,7 @@ export default PostForm;
 
 export async function loader({ request, params }) {
     const id = params.postId;
-    const response = await fetch('http://localhost:8080/posts/' + id);
+    const response = await fetch('http://localhost:5243/BlogPost/blogPostId/' + id);
 
     if (!response.ok) {
         throw new Response({
@@ -146,9 +179,8 @@ export async function loader({ request, params }) {
         )
     } else {
         const resData = await response.json();
-        console.log("post data ", resData);
         return {
-            post: resData.post
+            post: resData
         };
     }
 }
@@ -166,8 +198,8 @@ export async function action({ request, params }) {
         urlHandler: data.get('urlHandler'),
         publishedDate: data.get('publishedDate'),
         userId: data.get('author'),
-        isVisible: data.get('isVisible') === 'on' ? true: false,
-        tagIds: [],
+        isVisible: data.get('isVisible') === 'on' ? true : false,
+        tagIds: data.get('selectedTags') ? data.get('selectedTags').split(',').map(id => parseInt(id)) : [],
         likes: 0,
         dislikes: 0,
         comments: []
@@ -180,10 +212,10 @@ export async function action({ request, params }) {
 
     if (method === 'PUT') {
         const postId = params.postId;
-        url = `http://localhost:5243/BlogPost/update/?id=${postId}`;  
+        url = `http://localhost:5243/BlogPost/update/?id=${postId}`;
     }
 
-    const token = getAuthToken();
+    const token = getAuthToken().token;
 
     const response = await fetch(url, {
         method: method,

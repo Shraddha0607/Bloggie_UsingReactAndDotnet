@@ -21,7 +21,7 @@ function About() {
 
             <div>
                 {tags && tags.map((tag) => (
-                    <span key={tag.id} class="badge text-bg-dark m-1">{tag.name}</span>
+                    <span key={tag.id} className="badge text-bg-dark m-1">{tag.name}</span>
                 ))}
             </div>
         </div>

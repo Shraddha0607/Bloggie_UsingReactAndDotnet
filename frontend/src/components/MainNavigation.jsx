@@ -28,7 +28,7 @@ function MainNavigation() {
                                 </Form>
                             </li>}
                         </ul>
-                        <h4><span class="badge bg-secondary">{userName}</span></h4>
+                        <h4><span className="badge bg-secondary">{userName}</span></h4>
                     </div>
                 </div>
             </nav>
