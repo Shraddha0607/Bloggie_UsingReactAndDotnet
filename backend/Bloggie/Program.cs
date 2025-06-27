@@ -22,6 +22,7 @@ builder.Services.AddScoped<ICommentRepo, CommentRepo>();
 builder.Services.AddScoped<ITokenRepo, TokenRepo>();
 builder.Services.AddScoped<ICdnRepo, CdnRepo>();
 builder.Services.AddScoped<IBlogPostReactionRepo, BlogPostReactionRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

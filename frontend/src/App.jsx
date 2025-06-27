@@ -6,9 +6,9 @@ import MainLayout from './components/MainLayout'
 import Home, {loader as homeLoader} from './pages/Home';
 import AdminLayout from './components/AdminLayout';
 import AuthForm, { action as authAction } from './components/AuthForm';
-import UsersPage, { loadUsers as usersLoader, action as deleteUserAction } from './components/user/Users';
+import UsersPage, { loadUsers as usersLoader, action as deleteUserAction } from './components/admin/user/Users';
 import { loader as tokenLoader, checkAuthLoader } from './util/auth';
-import EditUserPage, { action as manipulateUserAction, loader as editUserPageLoader, } from './components/user/EditUser';
+import EditUserPage, { action as manipulateUserAction, loader as editUserPageLoader, } from './components/admin/user/EditUser';
 import { action as logoutAction } from './pages/Logout';
 import TagsPage , { loader as tagsLoader, action as deleteTagAction } from './components/admin/tag/Tags';
 import NewTagPage from './components/admin/tag/NewTag';

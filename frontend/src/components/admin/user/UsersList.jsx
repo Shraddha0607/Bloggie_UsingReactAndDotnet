@@ -21,18 +21,22 @@ function UsersList({ users }) {
                     <thead>
                         <tr>
                             <th scope="col">Id</th>
+                            <th scope="col">Username</th>
                             <th scope="col">Email</th>
+                            <th scope="col">Roles</th>
                             <th scope="col"></th>
-                            <th scope="col"></th>
+                            {/* <th scope="col"></th> */}
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user) => (
                             <tr key={user.id}>
                                 <td>{user.id}</td>
+                                <td>{user.userName}</td>
                                 <td>{user.email}</td>
+                                <td>{user.roles.join(',')}</td>
                                 <td><Link to={`${user.id}/edit`}>Edit</Link></td>
-                                <td><button onClick={() => deleteHandler(user.id)}>Delete</button></td>
+                                {/* <td><button onClick={() => deleteHandler(user.id)}>Delete</button></td> */}
                             </tr>
                         ))}
                     </tbody>
