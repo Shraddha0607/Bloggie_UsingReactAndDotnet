@@ -1,14 +1,37 @@
+import { useState } from 'react';
 import { Link, useSearchParams, Form, redirect } from 'react-router-dom';
 
 function AuthForm() {
     const [searchParams] = useSearchParams();
     const isLogin = searchParams.get('mode') === 'login';
+    const [roles, setRoles] = useState([]);
 
+    const handleRoleChange = (e) => {
+        console.log("event is ", e);
+        const {value, checked} = e.target;
+
+        console.log("value is, ", value, " ");
+
+        if (checked) {
+            setRoles ((prev) => 
+                [...prev, value]
+            );
+        }
+        else {
+            setRoles ((prev) => prev.filter((role) => role !== value));
+        }
+    };
 
     return (
         <div className='container'>
             <Form method='post' >
                 <h1>{isLogin ? 'Log in' : 'Create a new User'}</h1>
+                {!isLogin && <div className="row mb-3">
+                    <label htmlFor="username" className="col-sm-2 col-form-label">Username</label>
+                    <div className="col-sm-10">
+                        <input type="text" className="form-control" id="username" name="username" required />
+                    </div>
+                </div>}
                 <div className="row mb-3">
                     <label htmlFor="email" className="col-sm-2 col-form-label">Email</label>
                     <div className="col-sm-10">
@@ -21,10 +44,22 @@ function AuthForm() {
                         <input type="password" className="form-control" id="password" name="password" required />
                     </div>
                 </div>
-                {!isLogin && <div className="row mb-3">
-                    <label htmlFor="roles" className="col-sm-2 col-form-label">Role</label>
-                    <div className="col-sm-10">
-                        <input type="tet" className="form-control" id="roles" name="roles" required />
+                {!isLogin && <div className="row mb-3 ">
+                    <label htmlFor="roles" className="col-sm-2 col-form-label">Roles</label>
+                    <input type="hidden" name="selectedRoles" value={JSON.stringify(roles)} />
+                    <div className="">
+                        <div class="form-check">
+                            <input className="form-check-input" type="checkbox" value="Admin" checked={roles.includes('Admin')} id="role-admin" onChange={handleRoleChange} />
+                            <label className="form-check-label" for="flexCheckDefault">
+                                Admin
+                            </label>
+                        </div>
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" value="User" checked={roles.includes('User')} id="role-user" onChange={handleRoleChange} />
+                            <label className="form-check-label" for="flexCheckDefault">
+                                User
+                            </label>
+                        </div>
                     </div>
                 </div>}
                 <div>
@@ -52,12 +87,13 @@ export async function action({ request }) {
 
     const data = await request.formData();
     const authData = {
-        username: data.get('email'),
+        email: data.get('email'),
         password: data.get('password')
     };
 
     if (mode === 'signup') {
-        authData.role = data.get('roles');
+        authData.roles = JSON.parse(data.get('selectedRoles'));
+        authData.username = data.get('username');
 
         await signup(authData);
     }

@@ -28,7 +28,7 @@ namespace Bloggie.Controllers
             var identityUser = new IdentityUser
             {
                 UserName = registerRequestDto.Username,
-                Email = registerRequestDto.Username
+                Email = registerRequestDto.Email
             };
 
             var identityResult = await userManager.CreateAsync(identityUser, registerRequestDto.Password);
@@ -53,7 +53,7 @@ namespace Bloggie.Controllers
         [Route("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
         {
-            var user = await userManager.FindByEmailAsync(loginRequestDto.Username);
+            var user = await userManager.FindByEmailAsync(loginRequestDto.Email);
             if (user != null)
             {
                 var checkPasswordResult = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
@@ -76,7 +76,7 @@ namespace Bloggie.Controllers
                 }
             }
 
-            return BadRequest(new { message = "Username or password incorrect!" });
+            return BadRequest(new { message = "Email or password incorrect!" });
         }
 
     }

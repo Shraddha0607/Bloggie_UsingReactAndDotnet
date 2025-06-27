@@ -3,7 +3,7 @@ import { Form, NavLink, useLoaderData } from 'react-router-dom';
 function MainNavigation() {
     const authData = useLoaderData('root');
     const token = authData?.token;
-    const isAdmin = authData?.roles == 'Admin';
+    const isAdmin = authData?.roles && authData.roles.includes("Admin");
     const userName = authData?.userName;
 
     return (

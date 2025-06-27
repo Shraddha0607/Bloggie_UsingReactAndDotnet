@@ -20,11 +20,13 @@ import { action as addPostAction } from './components/admin/post/PostForm';
 import EditPostPage from './components/admin/post/EditPost';
 import {loader as editPostPageLoader } from './components/admin/post/PostForm';
 import FullPost, {loader as postLoader, action as commentAction} from './components/home/FullPost';
+import ErrorPage from './pages/Error';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
+    errorElement: <ErrorPage />,
     loader: tokenLoader,
     id: 'root',
     children: [
