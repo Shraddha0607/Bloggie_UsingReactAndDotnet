@@ -93,14 +93,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     }
     );
-    
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 app.UseCors("AllowReact");
@@ -115,7 +114,7 @@ app.UseHttpsRedirection();
 var cdnDir = Path.Combine(builder.Environment.ContentRootPath, "cdn-images");
 if (!Directory.Exists(cdnDir))
 {
-    Directory.CreateDirectory(cdnDir);  
+    Directory.CreateDirectory(cdnDir);
 }
 app.UseStaticFiles(new StaticFileOptions
 {
