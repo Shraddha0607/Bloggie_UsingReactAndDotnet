@@ -54,12 +54,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigin").Get<string[]>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-    policy => policy.WithOrigins("http://localhost:5173")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
+    policy => policy.WithOrigins(builder.Configuration.GetSection("AllowedOrigin").Get<string[]>())
+        .AllowAnyMethod()
+        .AllowAnyHeader()
     );
 });
 
@@ -96,10 +97,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-
 app.UseSwagger();
 app.UseSwaggerUI();
-
 
 app.UseHttpsRedirection();
 app.UseCors("AllowReact");
@@ -122,7 +121,6 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(builder.Environment.ContentRootPath, "cdn-images")),
     RequestPath = ""
 });
-
 
 app.Run();
 
