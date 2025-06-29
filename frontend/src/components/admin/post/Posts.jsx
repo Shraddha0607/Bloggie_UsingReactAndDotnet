@@ -2,6 +2,7 @@ import { Await, redirect, useRouteLoaderData } from "react-router-dom";
 import PostList from "./PostList";
 import { Suspense } from "react";
 import { getAuthToken } from "../../../util/auth";
+import { API_URL } from "../../../util/config";
 
 function PostsPage() {
     const { posts } = useRouteLoaderData('posts');
@@ -18,7 +19,7 @@ function PostsPage() {
 export default PostsPage;
 
 export async function loader() {
-    const response = await fetch('http://localhost:5243/BlogPost/all');
+    const response = await fetch(`${API_URL}/BlogPost/all`);
 
     if (!response.ok) {
         throw new Response({
@@ -40,7 +41,7 @@ export async function action({ params, request }) {
     const postId = params.postId;
     const token = getAuthToken();
 
-    const response = await fetch('http://localhost:5243/BlogPost/id/' + postId, {
+    const response = await fetch(`${API_URL}/BlogPost/id/${postId}`, {
         method: request.method,
         headers: {
             'Authorization': 'Bearer ' + token

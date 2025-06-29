@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { fileUploadUsingJson } from "../../../util/cdn";
 import TextEditor from "../../TextEditor";
 import { fetchTags } from '../../../util/common';
+import { API_URL } from "../../../util/config";
 
 function PostForm({ method, post }) {
     const [generatedImageUrl, setGeneratedImageUrl] = useState(post ? post.imageUrl : '');
@@ -169,7 +170,7 @@ export default PostForm;
 
 export async function loader({ request, params }) {
     const id = params.postId;
-    const response = await fetch('http://localhost:5243/BlogPost/blogPostId/' + id);
+    const response = await fetch(`${API_URL}/BlogPost/blogPostId/${id}`);
 
     if (!response.ok) {
         throw new Response({
@@ -208,11 +209,11 @@ export async function action({ request, params }) {
 
     console.log(PostData, " postdata");
 
-    let url = 'http://localhost:5243/BlogPost';
+    let url = `${API_URL}/BlogPost`;
 
     if (method === 'PUT') {
         const postId = params.postId;
-        url = `http://localhost:5243/BlogPost/update/?id=${postId}`;
+        url = `${API_URL}/BlogPost/update/?id=${postId}`;
     }
 
     const token = getAuthToken().token;

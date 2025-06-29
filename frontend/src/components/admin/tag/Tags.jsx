@@ -2,6 +2,7 @@ import { Await, redirect, useRouteLoaderData } from "react-router-dom";
 import TagList from "./TagList";
 import { Suspense } from "react";
 import { getAuthToken } from "../../../util/auth";
+import { API_URL } from "../../../util/config";
 
 function TagsPage() {
     const { tags } = useRouteLoaderData('tags');
@@ -18,7 +19,7 @@ function TagsPage() {
 export default TagsPage;
 
 export async function loader() {
-    const response = await fetch('http://localhost:5243/Tag/all');
+    const response = await fetch(`${API_URL}/Tag/all`);
 
     if (!response.ok) {
         throw new Response({
@@ -40,7 +41,7 @@ export async function action({ params, request }) {
     const tagId = params.tagId;
     const token = getAuthToken();
 
-    const response = await fetch('http://localhost:5243/Tag/id/' + tagId, {
+    const response = await fetch(`${API_URL}/Tag/id/${tagId}`, {
         method: request.method,
         headers: {
             'Authorization': 'Bearer ' + token

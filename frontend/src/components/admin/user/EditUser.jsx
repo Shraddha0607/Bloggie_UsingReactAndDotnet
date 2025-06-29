@@ -1,6 +1,7 @@
 import { Form, useActionData, useNavigate, useNavigation, useRouteLoaderData, redirect } from "react-router-dom";
 import { checkAuthLoader, getAuthToken } from "../../../util/auth";
 import { useState } from "react";
+import { API_URL } from "../../../util/config";
 
 function EditUserPage() {
     const { user } = useRouteLoaderData('user-details');
@@ -95,7 +96,7 @@ export default EditUserPage;
 
 
 async function loadUser(id) {
-    const response = await fetch(`http://localhost:5243/User?id=${id}`);
+    const response = await fetch(`${API_URL}/User?id=${id}`);
 
     if (!response.ok) {
         throw new Response(
@@ -133,7 +134,7 @@ export async function action({ request, params }) {
     };
 
     const token = getAuthToken();
-    const response = await fetch(`http://localhost:5243/User?id=${userId}`, {
+    const response = await fetch(`${API_URL}/User?id=${userId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

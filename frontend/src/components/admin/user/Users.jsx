@@ -2,6 +2,7 @@ import { Await, redirect, useRouteLoaderData } from "react-router-dom";
 import UsersList from "./UsersList";
 import { Suspense } from "react";
 import { getAuthToken } from "../../../util/auth";
+import { API_URL } from "../../../util/config";
 
 function UsersPage() {
     const { users } = useRouteLoaderData('users');
@@ -18,7 +19,7 @@ function UsersPage() {
 export default UsersPage;
 
 export async function loadUsers() {
-    const response = await fetch('http://localhost:5243/User/all');
+    const response = await fetch(`${API_URL}/User/all`);
 
     if (!response.ok) {
         throw new Response({
@@ -40,7 +41,7 @@ export async function action({ params, request }) {
     const userId = params.userId;
     const token = getAuthToken();
 
-    const response = await fetch(`http://localhost:5243/User?id=${userId}`, {
+    const response = await fetch(`${API_URL}/User?id=${userId}`, {
         method: request.method,
         headers: {
             'Authorization': 'Bearer ' + token

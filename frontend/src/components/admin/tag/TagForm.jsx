@@ -1,5 +1,6 @@
 import { Link, useSearchParams, useNavigate, Form, redirect, useActionData, useNavigation } from 'react-router-dom';
 import { getAuthToken } from '../../../util/auth';
+import { API_URL } from '../../../util/config';
 
 function TagForm({ method, tag }) {
 
@@ -55,7 +56,7 @@ export default TagForm;
 
 export async function loader({ request, params }) {
     const id = params.tagId;
-    const response = await fetch('http://localhost:5243/Tag/tagId/' + id);
+    const response = await fetch(`${API_URL}/Tag/tagId/${id}`);
 
     if (!response.ok) {
         throw new Response(
@@ -81,12 +82,12 @@ export async function action({ request, params }) {
         displayName: data.get('displayName'),
     };
 
-    let url = 'http://localhost:5243/Tag';
+    let url = `${API_URL}/Tag`;
 
     if (method === 'PUT') {
         console.log("inside patch");
         const tagId = params.tagId;
-        url = `http://localhost:5243/Tag/update?id=${tagId}`;
+        url = `${API_URL}/Tag/update?id=${tagId}`;   
     }
 
     const token = getAuthToken();

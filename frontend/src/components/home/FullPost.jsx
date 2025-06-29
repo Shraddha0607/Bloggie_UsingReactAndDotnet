@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import { useLoaderData , useFetcher} from 'react-router-dom';
 import { getAuthToken, getUser } from '../../util/auth';
+import { API_URL } from '../../util/config';
 
 function FullPost() {
 
@@ -34,8 +35,8 @@ function FullPost() {
     const fetchReaction = async () => {
 
             try {
-                const reactionResponse = await fetch(`http://localhost:5243/BlogPostReaction?PostId=${post.id}&UserId=${userId}`);
-                const commentResponse = await fetch(`http://localhost:5243/Comment?PostId=${post.id}`);
+                const reactionResponse = await fetch(`${API_URL}/BlogPostReaction?PostId=${post.id}&UserId=${userId}`);
+                const commentResponse = await fetch(`${API_URL}/Comment?PostId=${post.id}`);
 
                 if (!reactionResponse.ok) {
                     throw new Error("Could not fetch reaction!");
@@ -61,7 +62,7 @@ function FullPost() {
 
         try {
             console.log("dislike clicked");
-            const url = 'http://localhost:5243/BlogPostReaction';
+            const url = `${API_URL}/BlogPostReaction`;
 
             const reactionData = {
                 blogId: post.id,
@@ -102,7 +103,7 @@ function FullPost() {
                 userReaction: 1
             };
 
-            const url = 'http://localhost:5243/BlogPostReaction';
+            const url = `${API_URL}/BlogPostReaction`;
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -197,7 +198,7 @@ export async function loader({ params, request }) {
 
     const urlHandler = params.postUrl;
 
-    const response = await fetch('http://localhost:5243/BlogPost/byUrl/' + urlHandler);
+    const response = await fetch(`${API_URL}/BlogPost/byUrl/${urlHandler}`);
 
     if (!response.ok) {
         throw new Response(
@@ -223,7 +224,7 @@ export async function action({ params, request }) {
 
     console.log(commentData, " is the comment payload");
 
-    let url = 'http://localhost:5243/Comment';
+    let url = `${API_URL}/Comment`;
     const token = getAuthToken().token;
 
     const response = await fetch(url, {

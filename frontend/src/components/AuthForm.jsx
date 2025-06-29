@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useSearchParams, Form, redirect } from 'react-router-dom';
+import { API_URL } from '../util/config';
 
 function AuthForm() {
     const [searchParams] = useSearchParams();
@@ -107,7 +108,9 @@ export async function action({ request }) {
 
 
 async function signup(authData) {
-    const response = await fetch('http://localhost:5243/Auth/Register', {
+    console.log("singup called");
+    console.log(`${API_URL}/Auth/Register`);
+    const response = await fetch(`${API_URL}/Auth/Register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -126,7 +129,7 @@ async function signup(authData) {
 }
 
 async function login(authData) {
-    const response = await fetch('http://localhost:5243/Auth/Login', {
+    const response = await fetch(`${API_URL}/Auth/Login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

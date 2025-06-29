@@ -1,4 +1,5 @@
 import {getAuthToken} from './auth';
+import { API_URL } from './config';
 
 export async function fileUploadUsingJson(event, callback) {
      const file = event.target.files[0];
@@ -13,7 +14,7 @@ export async function fileUploadUsingJson(event, callback) {
              ImageContent: base64,
          }
 
-         let url = 'http://localhost:5243/cdn';
+         let url = `${API_URL}/cdn`;
 
          try {
              const response = await fetch(url, {

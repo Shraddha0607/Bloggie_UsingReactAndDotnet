@@ -1,5 +1,7 @@
+import { API_URL } from "./config";
+
 export const fetchTags = async () => {
-     const response = await fetch('http://localhost:5243/Tag/all');
+     const response = await fetch(`${API_URL}/Tag/all`);
 
     if (!response.ok) {
         throw new Response({

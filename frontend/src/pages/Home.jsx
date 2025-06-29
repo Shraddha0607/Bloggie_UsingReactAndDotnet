@@ -1,6 +1,7 @@
 import { useLoaderData } from "react-router-dom"
 import About from "../components/home/About"
 import PostCard from "../components/home/PostCard"
+import { API_URL } from "../util/config";
 
 function Home() {
   const posts = useLoaderData().posts;
@@ -24,8 +25,8 @@ function Home() {
 export default Home
 
 export async function loader() {
-  const response = await fetch('http://localhost:5243/BlogPost/all');
-  const tagResponse = await fetch('http://localhost:5243/Tag/all');
+  const response = await fetch(`${API_URL}/BlogPost/all`);
+  const tagResponse = await fetch(`${API_URL}/Tag/all`);
 
   if (!response.ok) {
     throw new Response({
