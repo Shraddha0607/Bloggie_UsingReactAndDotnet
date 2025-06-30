@@ -64,7 +64,6 @@ builder.Services.AddCors(options =>
     );
 });
 
-
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("CollegeApp")

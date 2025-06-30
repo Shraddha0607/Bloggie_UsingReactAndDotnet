@@ -39,7 +39,7 @@ export async function loader() {
 export async function action({ params, request }) {
 
     const postId = params.postId;
-    const token = getAuthToken();
+    const token = getAuthToken().token;
 
     const response = await fetch(`${API_URL}/BlogPost/id/${postId}`, {
         method: request.method,

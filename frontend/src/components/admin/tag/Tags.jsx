@@ -39,7 +39,7 @@ export async function loader() {
 export async function action({ params, request }) {
 
     const tagId = params.tagId;
-    const token = getAuthToken();
+    const token = getAuthToken().token;
 
     const response = await fetch(`${API_URL}/Tag/id/${tagId}`, {
         method: request.method,

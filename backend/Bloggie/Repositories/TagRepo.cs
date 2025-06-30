@@ -102,7 +102,7 @@ namespace Bloggie.Repositories
                 throw new CustomException("Invalid tag id!");
             }
 
-            var isValid = dbContext.Tags.Any(x => x.Name == tagRequest.Name);
+            var isValid = dbContext.Tags.Any(x => x.Name == tagRequest.Name && x.Id != id);
 
             if (isValid)
             {
@@ -110,6 +110,7 @@ namespace Bloggie.Repositories
             }
 
             existingTag.Name = tagRequest.Name;
+            existingTag.DisplayName = tagRequest.DisplayName;
 
             dbContext.Tags.Update(existingTag);
             await dbContext.SaveChangesAsync();

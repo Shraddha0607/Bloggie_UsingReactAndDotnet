@@ -90,7 +90,7 @@ export async function action({ request, params }) {
         url = `${API_URL}/Tag/update?id=${tagId}`;   
     }
 
-    const token = getAuthToken();
+    const token = getAuthToken().token;
 
     const response = await fetch(url, {
         method: method,
