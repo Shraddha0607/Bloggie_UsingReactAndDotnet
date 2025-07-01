@@ -14,7 +14,7 @@ function MainNavigation() {
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item mb-5">
-                                <NavLink className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} aria-current="page" to=""> Homee </NavLink>
+                                <NavLink className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} aria-current="page" to=""> Home </NavLink>
                             </li>
                             {token && isAdmin  && <li className="nav-item">
                                 <NavLink className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} to="admin"> Admin </NavLink>
