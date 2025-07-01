@@ -169,15 +169,7 @@ namespace Bloggie.Repositories
                 .Where(tag => blogPostRequest.TagIds.Contains(tag.Id))
                 .ToListAsync();
 
-            //existingBlogPost.Tags.Clear();
-
-            //foreach (var tag in tags)
-            //{
-            //    existingBlogPost.Tags.Add(tag);
-            //}
-
             existingBlogPost.Tags = tags;
-
             existingBlogPost.Heading = blogPostRequest.Heading;
             existingBlogPost.Title = blogPostRequest.Title;
             existingBlogPost.Content = blogPostRequest.Content;
