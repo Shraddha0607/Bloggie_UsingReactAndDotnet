@@ -94,7 +94,7 @@ namespace Bloggie.Repositories
 
         public async Task<MessageResponse> UpdateAsync(TagRequest tagRequest, int id)
         {
-            var existingTag = await dbContext.Tags.AsNoTracking()
+            var existingTag = await dbContext.Tags
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingTag == null)

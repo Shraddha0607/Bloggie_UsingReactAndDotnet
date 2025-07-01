@@ -113,7 +113,8 @@ namespace Bloggie.Repositories
             })
             .FirstOrDefaultAsync(x => x.Id == id);
 
-            if(blogPost == null){
+            if (blogPost == null)
+            {
                 throw new CustomException("Invalid post Id!");
             }
 
@@ -122,24 +123,25 @@ namespace Bloggie.Repositories
 
         public async Task<BlogPostResponse> GetByUrlAsync(string url)
         {
-           var blogPost = await dbContext.BlogPosts
-            .Select(x => new BlogPostResponse
-            {
-                Id = x.Id,
-                Heading = x.Heading,
-                Title = x.Title,
-                Content = x.Content,
-                ImageUrl = x.ImageUrl,
-                UrlHandler = x.UrlHandler,
-                ShortDescription = x.ShortDescription,
-                PublishedDate = x.PublishedDate,
-                Author = x.User.UserName,
-                IsVisible = x.IsVisible,
-                Tags = x.Tags,
-            })
-            .FirstOrDefaultAsync(x => x.UrlHandler == url);
+            var blogPost = await dbContext.BlogPosts
+             .Select(x => new BlogPostResponse
+             {
+                 Id = x.Id,
+                 Heading = x.Heading,
+                 Title = x.Title,
+                 Content = x.Content,
+                 ImageUrl = x.ImageUrl,
+                 UrlHandler = x.UrlHandler,
+                 ShortDescription = x.ShortDescription,
+                 PublishedDate = x.PublishedDate,
+                 Author = x.User.UserName,
+                 IsVisible = x.IsVisible,
+                 Tags = x.Tags,
+             })
+             .FirstOrDefaultAsync(x => x.UrlHandler == url);
 
-            if(blogPost == null){
+            if (blogPost == null)
+            {
                 throw new CustomException("Invalid post url!");
             }
 
@@ -148,7 +150,8 @@ namespace Bloggie.Repositories
 
         public async Task<MessageResponse> UpdateAsync(BlogPostRequest blogPostRequest, int id)
         {
-            var existingBlogPost = await dbContext.BlogPosts.AsNoTracking()
+            var existingBlogPost = await dbContext.BlogPosts
+                .Include(x => x.Tags)
             .FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingBlogPost == null)
@@ -166,6 +169,15 @@ namespace Bloggie.Repositories
                 .Where(tag => blogPostRequest.TagIds.Contains(tag.Id))
                 .ToListAsync();
 
+            //existingBlogPost.Tags.Clear();
+
+            //foreach (var tag in tags)
+            //{
+            //    existingBlogPost.Tags.Add(tag);
+            //}
+
+            existingBlogPost.Tags = tags;
+
             existingBlogPost.Heading = blogPostRequest.Heading;
             existingBlogPost.Title = blogPostRequest.Title;
             existingBlogPost.Content = blogPostRequest.Content;
@@ -175,13 +187,12 @@ namespace Bloggie.Repositories
             existingBlogPost.PublishedDate = blogPostRequest.PublishedDate;
             existingBlogPost.UserId = blogPostRequest.UserId;
             existingBlogPost.IsVisible = blogPostRequest.IsVisible;
-            existingBlogPost.Tags = tags;
 
             dbContext.BlogPosts.Update(existingBlogPost);
             await dbContext.SaveChangesAsync();
 
             return new MessageResponse { Message = "Updated successfully." };
         }
-        
+
     }
 }
