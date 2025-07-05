@@ -1,6 +1,5 @@
 
 
-using System.Reflection;
 using Bloggie.Data;
 using Bloggie.Exceptions;
 using Bloggie.Models.DomainModel;
@@ -25,7 +24,7 @@ namespace Bloggie.Repositories
 
             if (isValid)
             {
-                throw new CustomAttributeFormatException("Already existing tag name! It must be unique.");
+                throw new CustomException("Already existing tag name! It must be unique.");
             }
             
             Tag tag = new Tag

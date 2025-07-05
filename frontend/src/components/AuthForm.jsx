@@ -1,78 +1,117 @@
-import { useState } from 'react';
-import { Link, useSearchParams, Form, redirect } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import { Link, useSearchParams, Form, redirect, useActionData, useSubmit } from 'react-router-dom';
 import { API_URL } from '../util/config';
 
 function AuthForm() {
     const [searchParams] = useSearchParams();
     const isLogin = searchParams.get('mode') === 'login';
     const [roles, setRoles] = useState([]);
+    const actionData = useActionData();
+    const [formErrors, setFormErrors] = useState({});
+    const formRef = useRef();
+    const submit = useSubmit();
 
     const handleRoleChange = (e) => {
         console.log("event is ", e);
-        const {value, checked} = e.target;
+        const { value, checked } = e.target;
 
         console.log("value is, ", value, " ");
 
         if (checked) {
-            setRoles ((prev) => 
+            setRoles((prev) =>
                 [...prev, value]
             );
         }
         else {
-            setRoles ((prev) => prev.filter((role) => role !== value));
+            setRoles((prev) => prev.filter((role) => role !== value));
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const form = formRef.current;
+        const email = form.email.value.trim();
+        const password = form.password.value.trim();
+        const username = form.username?.value.trim();
+
+        const newErrors = {};
+
+        if (!email) newErrors.email = 'Email is required.';
+        if (!password) newErrors.password = 'Password is required.';
+        if (!isLogin) {
+            if (!username) newErrors.username = 'Username is required.';
+            if (roles.length === 0) newErrors.roles = 'Please select at least one role.'
+        }
+
+        setFormErrors(newErrors);
+
+        if (Object.keys(newErrors).length === 0) {
+            submit(form);
+        }
+    }
+
     return (
-        <div className='container'>
-            <Form method='post' >
-                <h1>{isLogin ? 'Log in' : 'Create a new User'}</h1>
-                {!isLogin && <div className="row mb-3">
-                    <label htmlFor="username" className="col-sm-2 col-form-label">Username</label>
-                    <div className="col-sm-10">
-                        <input type="text" className="form-control" id="username" name="username" required />
-                    </div>
-                </div>}
-                <div className="row mb-3">
-                    <label htmlFor="email" className="col-sm-2 col-form-label">Email</label>
-                    <div className="col-sm-10">
-                        <input type="email" className="form-control" id="email" name="email" required />
-                    </div>
+        <>
+            {actionData?.error && (
+                <div className='alert alert-danger mx-4 text-center'>
+                    ⚠️ {actionData.error}
                 </div>
-                <div className="row mb-3">
-                    <label htmlFor="password" className="col-sm-2 col-form-label">Password</label>
-                    <div className="col-sm-10">
-                        <input type="password" className="form-control" id="password" name="password" required />
-                    </div>
-                </div>
-                {!isLogin && <div className="row mb-3 ">
-                    <label htmlFor="roles" className="col-sm-2 col-form-label">Roles</label>
-                    <input type="hidden" name="selectedRoles" value={JSON.stringify(roles)} />
-                    <div className="">
-                        <div class="form-check">
-                            <input className="form-check-input" type="checkbox" value="Admin" checked={roles.includes('Admin')} id="role-admin" onChange={handleRoleChange} />
-                            <label className="form-check-label" for="flexCheckDefault">
-                                Admin
-                            </label>
+            )}
+            <div className='container'>
+                <Form method='post' ref={formRef} onSubmit={handleSubmit} >
+                    <h1>{isLogin ? 'Log in' : 'Create a new User'}</h1>
+                    {!isLogin && <div className="row mb-3">
+                        <label htmlFor="username" className="col-sm-2 col-form-label">Username</label>
+                        <div className="col-sm-10">
+                            <input type="text" className="form-control" id="username" name="username" />
+                            {formErrors.username && <div className='text-danger'>{formErrors.username}</div>}
                         </div>
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" value="User" checked={roles.includes('User')} id="role-user" onChange={handleRoleChange} />
-                            <label className="form-check-label" for="flexCheckDefault">
-                                User
-                            </label>
+                    </div>}
+                    <div className="row mb-3">
+                        <label htmlFor="email" className="col-sm-2 col-form-label">Email</label>
+                        <div className="col-sm-10">
+                            <input type="email" className="form-control" id="email" name="email" />
+                            {formErrors.email && <div className="text-danger">{formErrors.email}</div>}
                         </div>
                     </div>
-                </div>}
-                <div>
-                    <Link to={`?mode=${isLogin ? 'signup' : 'login'}`}>
-                        {isLogin ? 'Create new user' : 'Login'}
-                    </Link>
+                    <div className="row mb-3">
+                        <label htmlFor="password" className="col-sm-2 col-form-label">Password</label>
+                        <div className="col-sm-10">
+                            <input type="password" className="form-control" id="password" name="password" />
+                            {formErrors.password && <div className='text-danger'>{formErrors.password} </div>}
+                        </div>
+                    </div>
+                    {!isLogin && <div className="row mb-3 ">
+                        <label htmlFor="roles" className="col-sm-2 col-form-label">Roles</label>
+                        <input type="hidden" name="selectedRoles" value={JSON.stringify(roles)} />
+                        {formErrors.roles && <div className='text-danger'> {formErrors.roles} </div>}
+                        <div className="">
+                            <div class="form-check">
+                                <input className="form-check-input" type="checkbox" value="Admin" checked={roles.includes('Admin')} id="role-admin" onChange={handleRoleChange} />
+                                <label className="form-check-label" for="flexCheckDefault">
+                                    Admin
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input className="form-check-input" type="checkbox" value="User" checked={roles.includes('User')} id="role-user" onChange={handleRoleChange} />
+                                <label className="form-check-label" for="flexCheckDefault">
+                                    User
+                                </label>
+                            </div>
+                        </div>
+                    </div>}
+                    <div>
+                        <Link to={`?mode=${isLogin ? 'signup' : 'login'}`}>
+                            {isLogin ? 'Create new user' : 'Login'}
+                        </Link>
 
-                    <button className="btn btn-dark mx-2">Save</button>
+                        <button className="btn btn-dark mx-2">Save</button>
 
-                </div>
-            </Form>
-        </div>
+                    </div>
+                </Form>
+            </div>
+        </>
+
     )
 }
 
@@ -96,10 +135,12 @@ export async function action({ request }) {
         authData.roles = JSON.parse(data.get('selectedRoles'));
         authData.username = data.get('username');
 
-        await signup(authData);
+        const result = await signup(authData);
+        if (result?.error) return result;
     }
     else {
-        await login(authData);
+        const result = await login(authData);
+        if (result?.error) return result;
     }
 
     return redirect('/');
@@ -108,50 +149,53 @@ export async function action({ request }) {
 
 
 async function signup(authData) {
-    console.log("singup called");
-    console.log(`${API_URL}/Auth/Register`);
-    const response = await fetch(`${API_URL}/Auth/Register`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(authData)
-    });
+    try {
+        const response = await fetch(`${API_URL}/Auth/Register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(authData)
+        });
 
-    if (response.status === 422 || response.status === 401) {
-        return response;
+        if (!response.ok) {
+            const errorData = await response.json();
+            return { error: errorData.message || 'Failed to register user.' };
+        }
     }
-
-    if (!response.ok) {
-        throw new Response({ message: 'Could not add user!' }, { status: 500 });
+    catch (err) {
+        return { error: 'Something went wrong during signup. Please try again.' }
     }
 
 }
 
 async function login(authData) {
-    const response = await fetch(`${API_URL}/Auth/Login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(authData)
-    });
+    try {
 
-    if (response.status === 422 || response.status === 401) {
-        return response;
+        const response = await fetch(`${API_URL}/Auth/Login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(authData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            return { error: errorData.message || 'Login failed. Check your credentails.' }
+        }
+
+        const resData = await response.json();
+        const token = resData.jwtToken;
+        const userId = resData.id;
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('userId', userId);
+        const expiration = new Date();
+        expiration.setHours(expiration.getHours() + 1);
+        localStorage.setItem('expiration', expiration.toISOString());
     }
-
-    if (!response.ok) {
-        throw new Response({ message: 'Could not authenticate user.' }, { status: 500 });
+    catch (err) {
+        return { error: 'Something went wrong during login. Please try again.' };
     }
-
-    const resData = await response.json();
-    const token = resData.jwtToken;
-    const userId = resData.id;
-
-    localStorage.setItem('token', token);
-    localStorage.setItem('userId', userId);
-    const expiration = new Date();
-    expiration.setHours(expiration.getHours() + 1);
-    localStorage.setItem('expiration', expiration.toISOString());
 }
