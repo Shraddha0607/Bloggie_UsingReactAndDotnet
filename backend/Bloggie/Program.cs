@@ -8,6 +8,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
+var applicationUpTime = DateTime.UtcNow;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -63,13 +66,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-var allowedOrigins = builder.Configuration.GetSection("AllowedOrigin").Get<string[]>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-    policy => policy.WithOrigins(builder.Configuration.GetSection("AllowedOrigin").Get<string[]>())
-        .AllowAnyMethod()
-        .AllowAnyHeader()
+    policy =>
+    {
+        policy.AllowAnyMethod();
+        policy.AllowAnyHeader();
+
+        if (builder.Configuration.GetSection("AllowedAnyOrigin").Get<bool>())
+            policy.AllowAnyOrigin();
+        else
+            policy.WithOrigins(builder.Configuration.GetSection("AllowedOrigin").Get<string[]>() ?? []);
+    }
     );
 });
 
@@ -103,6 +112,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     }
     );
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<BloggieDbContext>(
+        name: "EF Core Database",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "db", "ef" });
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -116,39 +131,26 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.UseHttpsRedirection();
+app.MapHealthChecks("/health");
+app.MapGet("/", () => $"Application uptime : {applicationUpTime.ToString("O")}");
 
 // so that folder is serve via Http server also
-var cdnDir = Path.Combine(builder.Environment.ContentRootPath, "cdn-images");
-if (!Directory.Exists(cdnDir))
-{
-    Directory.CreateDirectory(cdnDir);
-}
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "cdn-images")),
-    RequestPath = ""
-});
-
-var logDir = Path.Combine(builder.Environment.ContentRootPath, "Logs");
-if (!Directory.Exists(logDir))
-{
-    Directory.CreateDirectory(logDir);
-}
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(logDir),
-    RequestPath = "/logs"
-});
+AddStaticFiles(builder, app, "cdn", null);
+AddStaticFiles(builder, app, "Logs", "/logs");
 
 app.Run();
 
-
-// {
-//   "username": "admin@email.com",
-//   "password": "admin@123",
-//   "roles": [
-//     "admin"
-//   ]
-// }
+static void AddStaticFiles(IHostApplicationBuilder builder, IApplicationBuilder app, string path, string? requestPath)
+{
+    var dir = Path.Combine(builder.Environment.ContentRootPath, path);
+    if (!Directory.Exists(dir))
+    {
+        Directory.CreateDirectory(dir);
+    }
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+            Path.Combine(builder.Environment.ContentRootPath, path)),
+        RequestPath = requestPath ?? string.Empty
+    });
+}
